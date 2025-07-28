@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Telegram WebApp — VS Code Style</title>
+  <title>LeakTools — LT Editor Style</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Fira+Code&display=swap');
@@ -82,18 +82,18 @@
 </head>
 <body>
   <header>
-    <div>Telegram WebApp</div>
-    <div>VS Code UI</div>
+    <div>LeakTools</div>
+    <div>LT Editor</div>
   </header>
 
   <main>
-    <h2>Привет👋</h2>
+    <h2>Добро пожаловать в LT Editor!</h2>
     <p id="user">Загрузка...</p>
-    <button onclick="Telegram.WebApp.close()">Закрыть</button>
+    <button onclick="Telegram.WebApp.close()">Начать</button>
   </main>
 
   <footer>
-    © 2025 Visual Style
+    © 2025 @LeakTools_bot
   </footer>
 
   <script>
@@ -101,7 +101,7 @@
     tg.expand();
     const user = tg.initDataUnsafe.user;
     document.getElementById('user').textContent =
-      `Добро пожаловать, ${user?.first_name || "гость"}!`;
+      `Ты попал в LT Editor, который поможет тебе написать код, и проверить при помощью AI, код на ошибки!`;
   </script>
 </body>
 </html>
