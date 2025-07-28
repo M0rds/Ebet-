@@ -71,6 +71,7 @@
       background: #1e1e1e;
       color: #9cdcfe;
       border-top: 1px solid #333;
+      min-height: 20px;
     }
 
     h2 {
@@ -104,6 +105,15 @@
       background: #005a9e;
     }
 
+    select {
+      background: #3c3c3c;
+      color: white;
+      border: 1px solid #007acc;
+      padding: 0.5rem;
+      border-radius: 4px;
+      font-family: 'Fira Code', monospace;
+    }
+
     @media (max-width: 768px) {
       button {
         font-size: 1rem;
@@ -132,6 +142,10 @@
       <div id="editor-container">
         <div id="editor"></div>
         <div id="controls">
+          <select id="language-selector" onchange="changeLanguage()">
+            <option value="javascript">JavaScript</option>
+            <option value="python">Python</option>
+          </select>
           <button onclick="checkCode()">✅ Проверить код</button>
           <button onclick="copyCode()">📋 Скопировать код</button>
         </div>
@@ -141,6 +155,7 @@
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pyodide@0.25.0/pyodide.js"></script>
 
   <script>
     const tg = window.Telegram.WebApp;
@@ -151,6 +166,24 @@
       `Ты попал в LT Code Editor, который поможет тебе писать код и проверять его на ошибки с помощью AI.`;
 
     let editorInstance;
+    let pyodide;
+    let isPyodideLoaded = false;
+
+    // Загружаем Pyodide заранее
+    async function loadPyodide() {
+      try {
+        pyodide = await loadPyodide({
+          indexURL: "https://cdn.jsdelivr.net/pyodide/v0.25.0/full/"
+        });
+        isPyodideLoaded = true;
+        console.log("Pyodide loaded successfully");
+      } catch (err) {
+        console.error("Failed to load Pyodide:", err);
+      }
+    }
+
+    // Запускаем загрузку Pyodide при старте
+    loadPyodide();
 
     function startEditor() {
       document.getElementById('screen1').style.display = 'none';
@@ -173,17 +206,53 @@
       }, 100);
     }
 
-    function checkCode() {
+    function changeLanguage() {
+      const language = document.getElementById('language-selector').value;
+      const model = editorInstance.getModel();
+      
+      if (language === 'javascript') {
+        monaco.editor.setModelLanguage(model, 'javascript');
+        editorInstance.setValue(`function hello() {\n  console.log("Привет, LT Code Editor!");\n}`);
+      } else if (language === 'python') {
+        monaco.editor.setModelLanguage(model, 'python');
+        editorInstance.setValue(`def hello():\n    print("Привет, LT Code Editor!")`);
+      }
+    }
+
+    async function checkCode() {
       const code = editorInstance.getValue();
       const resultDiv = document.getElementById('result');
+      const language = document.getElementById('language-selector').value;
+
+      resultDiv.textContent = "Проверяем код...";
+      resultDiv.style.color = '#9cdcfe';
 
       try {
-        new Function(code);
-        resultDiv.style.color = '#6a9955';
-        resultDiv.textContent = '✅ Ошибок не обнаружено.';
+        if (language === 'javascript') {
+          // Проверка JavaScript кода
+          new Function(code);
+          resultDiv.style.color = '#6a9955';
+          resultDiv.textContent = '✅ Ошибок не обнаружено.';
+        } else if (language === 'python') {
+          // Проверка Python кода
+          if (!isPyodideLoaded) {
+            resultDiv.style.color = '#f44747';
+            resultDiv.textContent = '❌ Pyodide еще не загружен, попробуйте позже.';
+            return;
+          }
+          
+          try {
+            await pyodide.runPythonAsync(code);
+            resultDiv.style.color = '#6a9955';
+            resultDiv.textContent = '✅ Ошибок не обнаружено.';
+          } catch (err) {
+            resultDiv.style.color = '#f44747';
+            resultDiv.textContent = `❌ Ошибка Python: ${err.message}`;
+          }
+        }
       } catch (err) {
         resultDiv.style.color = '#f44747';
-        resultDiv.textContent = `❌ Ошибка: ${err.message}`;
+        resultDiv.textContent = `❌ Ошибка ${language === 'javascript' ? 'JavaScript' : 'Python'}: ${err.message}`;
       }
     }
 
