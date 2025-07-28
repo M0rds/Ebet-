@@ -2,24 +2,27 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
   <title>LT Code Editor</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Fira+Code&display=swap');
 
-    body {
+    html, body {
       margin: 0;
-      font-family: 'Fira Code', monospace;
-      background-color: #1e1e1e;
-      color: #d4d4d4;
-      height: 100vh;
+      padding: 0;
+      height: 100%;
+      width: 100%;
       overflow: hidden;
+      background-color: #1e1e1e;
+      font-family: 'Fira Code', monospace;
+      -webkit-tap-highlight-color: transparent;
     }
 
     main {
       height: 100%;
+      width: 100%;
       display: flex;
       flex-direction: column;
     }
@@ -30,7 +33,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 2rem;
+      padding: 1rem;
     }
 
     #screen2 {
@@ -38,40 +41,75 @@
       padding: 0;
     }
 
+    #editor {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+    }
+
+    h2 {
+      color: #d4d4d4;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    #user {
+      color: #9cdcfe;
+      font-size: 1rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      max-width: 600px;
+    }
+
     button {
       background: #007acc;
       color: white;
       border: none;
-      padding: 0.8rem 1.6rem;
-      border-radius: 6px;
+      padding: 1rem 2rem;
+      border-radius: 8px;
       font-size: 1rem;
       cursor: pointer;
       transition: background 0.3s ease;
+      width: 100%;
+      max-width: 320px;
     }
 
     button:hover {
       background: #005a9e;
     }
 
-    #editor {
-      height: 100%;
-      width: 100%;
+    @media (max-width: 768px) {
+      button {
+        font-size: 1rem;
+        padding: 1rem;
+      }
+
+      h2 {
+        font-size: 1.4rem;
+      }
+
+      #editor {
+        font-size: 16px !important;
+      }
     }
   </style>
 </head>
 <body>
   <main>
+    <!-- Экран приветствия -->
     <div id="screen1">
       <h2>Добро пожаловать в LT Code Editor!</h2>
       <p id="user">Загрузка...</p>
       <button onclick="startEditor()">Начать кодить</button>
     </div>
 
+    <!-- Экран редактора -->
     <div id="screen2">
       <div id="editor"></div>
     </div>
   </main>
 
+  <!-- Подключение Monaco Editor -->
   <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
 
   <script>
@@ -83,19 +121,26 @@
       `Ты попал в LT Code Editor, который поможет тебе писать код и проверять его на ошибки с помощью AI.`;
 
     function startEditor() {
+      // Скрываем экран 1, показываем редактор
       document.getElementById('screen1').style.display = 'none';
       document.getElementById('screen2').style.display = 'flex';
 
-      require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' }});
-      require(['vs/editor/editor.main'], function () {
-        monaco.editor.create(document.getElementById('editor'), {
-          value: `function hello() {\n  console.log("Привет, LT Code Editor!");\n}`,
-          language: 'javascript',
-          theme: 'vs-dark',
-          fontSize: 14,
-          automaticLayout: true
+      // Немного подождём, чтобы DOM обновился перед созданием редактора
+      setTimeout(() => {
+        require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' }});
+        require(['vs/editor/editor.main'], function () {
+          monaco.editor.create(document.getElementById('editor'), {
+            value: `function hello() {\n  console.log("Привет, LT Code Editor!");\n}`,
+            language: 'javascript',
+            theme: 'vs-dark',
+            fontSize: window.innerWidth < 768 ? 16 : 14,
+            automaticLayout: true,
+            autoIndent: "full",
+            wordWrap: "on",
+            minimap: { enabled: false },
+          });
         });
-      });
+      }, 100);
     }
   </script>
 </body>
