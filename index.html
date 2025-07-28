@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>LT Code Editor</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Montserrat:wght@500;600;700&display=swap');
-    
+
     :root {
       --primary: #007acc;
       --primary-dark: #0062a3;
@@ -18,7 +18,7 @@
       --text-light: #9cdcfe;
       --error: #f44747;
       --success: #6a9955;
-      --menu-width: 250px;
+      --menu-width: 280px;
     }
 
     * {
@@ -27,246 +27,487 @@
       box-sizing: border-box;
     }
 
-    body {
+    html, body {
+      height: 100%;
+      width: 100%;
+      background-color: var(--bg);
       font-family: 'Montserrat', sans-serif;
-      background: var(--bg);
       color: var(--text);
-      height: 100vh;
+      -webkit-tap-highlight-color: transparent;
       overflow: hidden;
     }
 
-    #menu-button {
-      position: fixed;
-      top: 15px;
-      left: 15px;
-      z-index: 50;
-      background: var(--primary);
-      border: none;
-      width: 40px;
-      height: 40px;
-      border-radius: 8px;
+    main {
+      height: 100%;
+      width: 100%;
       display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
-
-    #menu-button i {
-      color: white;
-      font-size: 1.1rem;
+      flex-direction: column;
+      position: relative;
     }
 
     #menu {
       position: fixed;
       top: 0;
-      left: -100%;
+      left: calc(-1 * var(--menu-width));
       width: var(--menu-width);
       height: 100%;
       background: var(--bg-light);
+      box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
       z-index: 100;
-      transition: all 0.3s ease;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       padding: 20px;
-      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
     }
 
     #menu.menu-open {
-      left: 0;
+      transform: translateX(var(--menu-width));
     }
 
     .menu-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       padding-bottom: 15px;
-      margin-bottom: 15px;
       border-bottom: 1px solid #333;
+      margin-bottom: 10px;
+    }
+
+    .menu-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--text-light);
     }
 
     .menu-close {
       background: none;
       border: none;
       color: var(--text);
-      font-size: 1.2rem;
-      position: absolute;
-      right: 15px;
-      top: 15px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .menu-close:hover {
+      transform: rotate(90deg);
     }
 
     .menu-item {
-      display: block;
-      padding: 12px;
-      color: var(--text);
-      text-decoration: none;
+      padding: 12px 15px;
       border-radius: 6px;
-      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      color: var(--text);
     }
 
     .menu-item:hover {
-      background: rgba(0,122,204,0.1);
+      background: rgba(0, 122, 204, 0.2);
+      color: var(--text-light);
+    }
+
+    .menu-item i {
+      width: 20px;
+      text-align: center;
+    }
+
+    #menu-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 50;
+      background: rgba(30, 30, 30, 0.8);
+      backdrop-filter: blur(5px);
+      border: none;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s;
+    }
+
+    #menu-button:hover {
+      background: var(--primary);
+      transform: scale(1.05);
+    }
+
+    #menu-button i {
+      color: white;
+      font-size: 1.2rem;
     }
 
     #screen1, #screen2 {
-      height: 100%;
+      flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 20px;
-      transition: all 0.3s;
+      padding: 2rem;
+      transition: filter 0.3s;
     }
 
     #screen2 {
       display: none;
+      padding: 0;
+    }
+
+    .blur-content {
+      filter: blur(3px);
+      pointer-events: none;
     }
 
     h2 {
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
+      color: white;
+      font-size: 2.2rem;
+      margin-bottom: 1.5rem;
       text-align: center;
-      color: var(--text-light);
+      font-weight: 700;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      background: linear-gradient(90deg, #007acc, #00a8ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     #user {
-      font-size: 0.9rem;
+      color: var(--text-light);
+      font-size: 1.1rem;
       text-align: center;
-      margin-bottom: 1.5rem;
-      color: var(--text);
-      max-width: 300px;
+      margin-bottom: 2.5rem;
+      max-width: 600px;
+      line-height: 1.6;
+      opacity: 0.9;
     }
 
     .start-button {
       background: var(--primary);
       color: white;
       border: none;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-size: 0.95rem;
-      font-weight: 500;
+      padding: 1.2rem 2.5rem;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      box-shadow: 0 4px 15px rgba(0, 122, 204, 0.4);
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      min-width: 220px;
+      text-align: center;
     }
 
     .start-button:hover {
       background: var(--primary-dark);
+      box-shadow: 0 6px 20px rgba(0, 122, 204, 0.6);
+      transform: translateY(-2px);
+    }
+
+    .start-button:active {
+      transform: translateY(0);
+    }
+
+    .start-button::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        45deg,
+        transparent 25%,
+        rgba(255, 255, 255, 0.1) 50%,
+        transparent 75%
+      );
+      background-size: 400% 400%;
+      z-index: -1;
+      transition: background-position 0.6s ease;
+    }
+
+    .start-button:hover::after {
+      background-position: 100% 100%;
+      animation: shine 1.5s infinite;
+    }
+
+    @keyframes shine {
+      0% {
+        background-position: 0% 50%;
+      }
+      100% {
+        background-position: 100% 50%;
+      }
     }
 
     #editor-container {
+      flex: 1;
       width: 100%;
-      height: calc(100% - 100px);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    #editor {
+      flex: 1;
+      width: 100%;
     }
 
     #controls {
-      padding: 10px;
+      padding: 1rem;
       display: flex;
-      gap: 8px;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+      background: var(--bg-light);
+      border-top: 1px solid #333;
     }
 
     #language-selector {
-      padding: 8px;
-      border-radius: 6px;
-      background: var(--bg-light);
-      color: var(--text);
-      border: 1px solid #333;
+      background: #3c3c3c;
+      color: white;
+      border: 1px solid var(--primary);
+      padding: 0.75rem;
+      border-radius: 8px;
+      font-family: 'Fira Code', monospace;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    #language-selector:hover {
+      border-color: var(--primary-dark);
     }
 
     #result {
-      padding: 10px;
-      font-size: 0.85rem;
+      padding: 1rem;
+      text-align: center;
+      font-size: 0.95rem;
+      background: var(--bg);
+      color: var(--text-light);
+      border-top: 1px solid #333;
+      min-height: 20px;
+    }
+
+    @media (max-width: 768px) {
+      h2 {
+        font-size: 1.8rem;
+      }
+
+      #user {
+        font-size: 1rem;
+        padding: 0 1rem;
+      }
+
+      .start-button {
+        padding: 1rem 2rem;
+        font-size: 1rem;
+      }
+
+      #menu {
+        width: 85%;
+      }
     }
   </style>
 </head>
 <body>
-  <button id="menu-button" onclick="toggleMenu()">
-    <i class="fas fa-bars"></i>
-  </button>
-
-  <div id="menu">
-    <div class="menu-header">
-      <h3>Меню</h3>
-      <button class="menu-close" onclick="toggleMenu()">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-    <a href="#" class="menu-item" onclick="showCreatorInfo()">
-      <i class="fas fa-user"></i> Создатель
-    </a>
-    <a href="#" class="menu-item">
-      <i class="fas fa-info-circle"></i> О программе
-    </a>
-    <a href="#" class="menu-item">
-      <i class="fas fa-cog"></i> Настройки
-    </a>
-  </div>
-
-  <div id="screen1">
-    <h2>LT Code Editor</h2>
-    <p id="user">Редактор кода для проверки JavaScript и Python</p>
-    <button class="start-button" onclick="startEditor()">
-      <i class="fas fa-play"></i> Начать
+  <main>
+    <button id="menu-button" onclick="toggleMenu()">
+      <i class="fas fa-bars"></i>
     </button>
-  </div>
 
-  <div id="screen2">
-    <div id="editor-container">
-      <div id="editor"></div>
-      <div id="controls">
-        <select id="language-selector">
-          <option value="javascript">JavaScript</option>
-          <option value="python">Python</option>
-        </select>
-        <button class="start-button" onclick="checkCode()">
-          <i class="fas fa-check"></i> Проверить
-        </button>
-        <button class="start-button" onclick="copyCode()">
-          <i class="fas fa-copy"></i> Копировать
+    <div id="menu">
+      <div class="menu-header">
+        <div class="menu-title">Меню</div>
+        <button class="menu-close" onclick="toggleMenu()">
+          <i class="fas fa-times"></i>
         </button>
       </div>
-      <div id="result">Готов к работе</div>
+      <a href="#" class="menu-item" onclick="showCreatorInfo()">
+        <i class="fas fa-user"></i>
+        <span>Создатель</span>
+      </a>
+      <a href="#" class="menu-item">
+        <i class="fas fa-info-circle"></i>
+        <span>О программе</span>
+      </a>
+      <a href="#" class="menu-item">
+        <i class="fas fa-cog"></i>
+        <span>Настройки</span>
+      </a>
     </div>
-  </div>
+
+    <div id="screen1">
+      <h2>Добро пожаловать в LT Code Editor!</h2>
+      <p id="user">Ты попал в LT Code Editor, который поможет тебе писать код и проверять его на ошибки с помощью AI.</p>
+      <button class="start-button" onclick="startEditor()">
+        <i class="fas fa-rocket" style="margin-right: 8px;"></i>
+        Начать
+      </button>
+    </div>
+
+    <div id="screen2">
+      <div id="editor-container">
+        <div id="editor"></div>
+        <div id="controls">
+          <select id="language-selector" onchange="changeLanguage()">
+            <option value="javascript">JavaScript</option>
+            <option value="python">Python</option>
+          </select>
+          <button class="start-button" onclick="checkCode()" style="padding: 0.75rem 1.5rem;">
+            <i class="fas fa-check" style="margin-right: 8px;"></i>
+            Проверить код
+          </button>
+          <button class="start-button" onclick="copyCode()" style="padding: 0.75rem 1.5rem;">
+            <i class="fas fa-copy" style="margin-right: 8px;"></i>
+            Скопировать
+          </button>
+        </div>
+        <div id="result">Готов к работе</div>
+      </div>
+    </div>
+  </main>
 
   <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pyodide@0.25.0/pyodide.js"></script>
+
   <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
     let editorInstance;
+    let pyodide;
+    let isPyodideLoaded = false;
     let menuOpen = false;
+
+    async function loadPyodide() {
+      try {
+        pyodide = await loadPyodide({
+          indexURL: "https://cdn.jsdelivr.net/pyodide/v0.25.0/full/"
+        });
+        await pyodide.loadPackage(['pyflakes']);
+        isPyodideLoaded = true;
+      } catch (err) {
+        console.error("Failed to load Pyodide:", err);
+      }
+    }
+
+    loadPyodide();
 
     function toggleMenu() {
       const menu = document.getElementById('menu');
       menuOpen = !menuOpen;
-      menu.classList.toggle('menu-open', menuOpen);
+      
+      if (menuOpen) {
+        menu.classList.add('menu-open');
+        document.getElementById('screen1').classList.add('blur-content');
+        if (document.getElementById('screen2').style.display === 'flex') {
+          document.getElementById('screen2').classList.add('blur-content');
+        }
+      } else {
+        menu.classList.remove('menu-open');
+        document.getElementById('screen1').classList.remove('blur-content');
+        document.getElementById('screen2').classList.remove('blur-content');
+      }
     }
 
     function showCreatorInfo() {
       toggleMenu();
-      alert("Разработано специально для LT Code Editor");
+      alert("LT Code Editor был создан командой энтузиастов для удобной проверки кода.");
     }
 
     function startEditor() {
       document.getElementById('screen1').style.display = 'none';
       document.getElementById('screen2').style.display = 'flex';
-      
-      require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' }});
-      require(['vs/editor/editor.main'], function() {
-        editorInstance = monaco.editor.create(document.getElementById('editor'), {
-          value: 'console.log("Hello World");',
-          language: 'javascript',
-          theme: 'vs-dark',
-          automaticLayout: true
+
+      setTimeout(() => {
+        require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' }});
+        require(['vs/editor/editor.main'], function () {
+          editorInstance = monaco.editor.create(document.getElementById('editor'), {
+            value: `function hello() {\n  console.log("Привет, LT Code Editor!");\n}`,
+            language: 'javascript',
+            theme: 'vs-dark',
+            fontSize: window.innerWidth < 768 ? 16 : 14,
+            automaticLayout: true,
+            autoIndent: "full",
+            wordWrap: "on",
+            minimap: { enabled: false }
+          });
         });
-      });
+      }, 100);
     }
 
-    function checkCode() {
+    function changeLanguage() {
+      const language = document.getElementById('language-selector').value;
+      const model = editorInstance.getModel();
+      
+      if (language === 'javascript') {
+        monaco.editor.setModelLanguage(model, 'javascript');
+        editorInstance.setValue(`function hello() {\n  console.log("Привет, LT Code Editor!");\n}`);
+      } else if (language === 'python') {
+        monaco.editor.setModelLanguage(model, 'python');
+        editorInstance.setValue(`def hello():\n    print("Привет, LT Code Editor!")`);
+      }
+    }
+
+    async function checkCode() {
       const code = editorInstance.getValue();
+      const resultDiv = document.getElementById('result');
+      const language = document.getElementById('language-selector').value;
+
+      resultDiv.textContent = "Проверяем код...";
+      resultDiv.style.color = 'var(--text-light)';
+
       try {
-        new Function(code);
-        document.getElementById('result').textContent = '✅ Код корректен';
-      } catch (e) {
-        document.getElementById('result').textContent = '❌ Ошибка: ' + e.message;
+        if (language === 'javascript') {
+          new Function(code);
+          resultDiv.style.color = 'var(--success)';
+          resultDiv.textContent = '✅ Ошибок не обнаружено.';
+        } else if (language === 'python') {
+          if (!isPyodideLoaded) {
+            resultDiv.style.color = 'var(--error)';
+            resultDiv.textContent = '❌ Python еще загружается, попробуйте позже.';
+            return;
+          }
+          
+          try {
+            await pyodide.runPythonAsync(`
+              import ast
+              try:
+                  ast.parse("""${code.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n')}""")
+              except SyntaxError as e:
+                  raise Exception(f"Синтаксическая ошибка: {e.msg} (строка {e.lineno})")
+            `);
+            
+            await pyodide.runPythonAsync(code);
+            resultDiv.style.color = 'var(--success)';
+            resultDiv.textContent = '✅ Ошибок не обнаружено.';
+          } catch (runtimeErr) {
+            resultDiv.style.color = 'var(--error)';
+            resultDiv.textContent = `❌ Ошибка выполнения: ${runtimeErr.message}`;
+          }
+        }
+      } catch (err) {
+        resultDiv.style.color = 'var(--error)';
+        resultDiv.textContent = `❌ Ошибка ${language === 'javascript' ? 'JavaScript' : 'Python'}: ${err.message}`;
       }
     }
 
     function copyCode() {
-      navigator.clipboard.writeText(editorInstance.getValue());
-      document.getElementById('result').textContent = '📋 Код скопирован';
+      const code = editorInstance.getValue();
+      navigator.clipboard.writeText(code).then(() => {
+        const resultDiv = document.getElementById('result');
+        resultDiv.style.color = 'var(--text-light)';
+        resultDiv.textContent = '📋 Код скопирован в буфер обмена!';
+      }).catch(() => {
+        alert("Ошибка при копировании.");
+      });
     }
   </script>
 </body>
