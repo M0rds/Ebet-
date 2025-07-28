@@ -7,8 +7,6 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Montserrat:wght@500;600;700&display=swap');
-
     :root {
       --primary: #007acc;
       --primary-dark: #0062a3;
@@ -19,6 +17,13 @@
       --error: #f44747;
       --success: #6a9955;
       --menu-width: 280px;
+    }
+
+    [data-theme="light"] {
+      --bg: #ffffff;
+      --bg-light: #f2f2f2;
+      --text: #1e1e1e;
+      --text-light: #007acc;
     }
 
     * {
@@ -48,14 +53,13 @@
     #menu {
       position: fixed;
       top: 0;
-      left: 0;
+      left: calc(-1 * var(--menu-width));
       width: var(--menu-width);
       height: 100%;
       background: var(--bg-light);
       box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
       z-index: 100;
-      transform: translateX(-100%);
-      transition: transform 0.3s ease-in-out;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       padding: 20px;
       display: flex;
       flex-direction: column;
@@ -63,7 +67,7 @@
     }
 
     #menu.menu-open {
-      transform: translateX(0);
+      transform: translateX(var(--menu-width));
     }
 
     .menu-header {
@@ -87,11 +91,6 @@
       color: var(--text);
       font-size: 1.5rem;
       cursor: pointer;
-      transition: transform 0.2s;
-    }
-
-    .menu-close:hover {
-      transform: rotate(90deg);
     }
 
     .menu-item {
@@ -101,7 +100,6 @@
       align-items: center;
       gap: 10px;
       cursor: pointer;
-      transition: all 0.2s;
       text-decoration: none;
       color: var(--text);
     }
@@ -109,11 +107,6 @@
     .menu-item:hover {
       background: rgba(0, 122, 204, 0.2);
       color: var(--text-light);
-    }
-
-    .menu-item i {
-      width: 20px;
-      text-align: center;
     }
 
     #menu-button {
@@ -131,13 +124,6 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      transition: all 0.3s;
-    }
-
-    #menu-button:hover {
-      background: var(--primary);
-      transform: scale(1.05);
     }
 
     #menu-button i {
@@ -145,102 +131,28 @@
       font-size: 1.2rem;
     }
 
-    #screen1, #screen2 {
+    #screen1, #screen2, #settings-screen {
       flex: 1;
-      display: flex;
+      display: none;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 2rem;
-      transition: filter 0.3s;
     }
 
-    #screen2 {
-      display: none;
-      padding: 0;
-    }
-
-    .blur-content {
-      filter: blur(3px);
-      pointer-events: none;
-    }
-
-    h2 {
-      color: white;
-      font-size: 2.2rem;
-      margin-bottom: 1.5rem;
-      text-align: center;
-      font-weight: 700;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-      background: linear-gradient(90deg, #007acc, #00a8ff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    #user {
-      color: var(--text-light);
-      font-size: 1.1rem;
-      text-align: center;
-      margin-bottom: 2.5rem;
-      max-width: 600px;
-      line-height: 1.6;
-      opacity: 0.9;
+    #screen1 {
+      display: flex;
     }
 
     .start-button {
       background: var(--primary);
       color: white;
       border: none;
-      padding: 1.2rem 2.5rem;
+      padding: 1rem 2rem;
       border-radius: 12px;
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-      box-shadow: 0 4px 15px rgba(0, 122, 204, 0.4);
-      position: relative;
-      overflow: hidden;
-      z-index: 1;
-      min-width: 220px;
-      text-align: center;
-    }
-
-    .start-button:hover {
-      background: var(--primary-dark);
-      box-shadow: 0 6px 20px rgba(0, 122, 204, 0.6);
-      transform: translateY(-2px);
-    }
-
-    .start-button:active {
-      transform: translateY(0);
-    }
-
-    .start-button::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(45deg, transparent 25%, rgba(255, 255, 255, 0.1) 50%, transparent 75%);
-      background-size: 400% 400%;
-      z-index: -1;
-      transition: background-position 0.6s ease;
-    }
-
-    .start-button:hover::after {
-      background-position: 100% 100%;
-      animation: shine 1.5s infinite;
-    }
-
-    @keyframes shine {
-      0% {
-        background-position: 0% 50%;
-      }
-      100% {
-        background-position: 100% 50%;
-      }
     }
 
     #editor-container {
@@ -263,67 +175,19 @@
       gap: 0.75rem;
       justify-content: center;
       background: var(--bg-light);
-      border-top: 1px solid #333;
-    }
-
-    #language-selector {
-      background: #3c3c3c;
-      color: white;
-      border: 1px solid var(--primary);
-      padding: 0.75rem;
-      border-radius: 8px;
-      font-family: 'Fira Code', monospace;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    #language-selector:hover {
-      border-color: var(--primary-dark);
     }
 
     #result {
       padding: 1rem;
       text-align: center;
-      font-size: 0.95rem;
       background: var(--bg);
       color: var(--text-light);
       border-top: 1px solid #333;
-      min-height: 20px;
     }
 
     @media (max-width: 768px) {
-      h2 {
-        font-size: 1.8rem;
-      }
-
-      #user {
-        font-size: 1rem;
-        padding: 0 1rem;
-      }
-
-      .start-button {
-        padding: 1rem 2rem;
-        font-size: 1rem;
-      }
-
       #menu {
         width: 85%;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .start-button {
-        width: 100%;
-        min-width: unset;
-      }
-
-      #menu-button {
-        width: 40px;
-        height: 40px;
-      }
-
-      #editor {
-        font-size: 16px;
       }
     }
   </style>
@@ -341,15 +205,15 @@
           <i class="fas fa-times"></i>
         </button>
       </div>
-      <a href="#" class="menu-item" onclick="showCreatorInfo()">
+      <a href="https://t.me/M0rds" class="menu-item">
         <i class="fas fa-user"></i>
         <span>Создатель</span>
       </a>
-      <a href="#" class="menu-item">
+      <a href="#" class="menu-item" onclick="showAbout()">
         <i class="fas fa-info-circle"></i>
         <span>О программе</span>
       </a>
-      <a href="#" class="menu-item">
+      <a href="#" class="menu-item" onclick="showSettings()">
         <i class="fas fa-cog"></i>
         <span>Настройки</span>
       </a>
@@ -358,10 +222,7 @@
     <div id="screen1">
       <h2>Добро пожаловать в LT Code Editor!</h2>
       <p id="user">Ты попал в LT Code Editor, который поможет тебе писать код и проверять его на ошибки с помощью AI.</p>
-      <button class="start-button" onclick="startEditor()">
-        <i class="fas fa-rocket" style="margin-right: 8px;"></i>
-        Начать
-      </button>
+      <button class="start-button" onclick="startEditor()">Начать</button>
     </div>
 
     <div id="screen2">
@@ -372,23 +233,26 @@
             <option value="javascript">JavaScript</option>
             <option value="python">Python</option>
           </select>
-          <button class="start-button" onclick="checkCode()" style="padding: 0.75rem 1.5rem;">
-            <i class="fas fa-check" style="margin-right: 8px;"></i>
-            Проверить код
-          </button>
-          <button class="start-button" onclick="copyCode()" style="padding: 0.75rem 1.5rem;">
-            <i class="fas fa-copy" style="margin-right: 8px;"></i>
-            Скопировать
-          </button>
+          <input type="color" id="error-color" title="Цвет ошибки" onchange="updateErrorColor()">
+          <select onchange="changeTheme(this.value)">
+            <option value="dark">Тема: Тёмная</option>
+            <option value="light">Тема: Светлая</option>
+          </select>
+          <button class="start-button" onclick="checkCode()">Проверить код</button>
         </div>
         <div id="result">Готов к работе</div>
       </div>
     </div>
+
+    <div id="settings-screen">
+      <h2>Настройки</h2>
+      <p>Здесь ты можешь выбрать тему и цвет ошибок</p>
+      <button class="start-button" onclick="showMain()">Назад</button>
+    </div>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/pyodide@0.25.0/pyodide.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/pyodide@0.25.0/pyodide.js"></script>
   <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
@@ -398,128 +262,102 @@
     let isPyodideLoaded = false;
     let menuOpen = false;
 
-    async function loadPyodide() {
-      try {
-        pyodide = await loadPyodide({
-          indexURL: "https://cdn.jsdelivr.net/pyodide/v0.25.0/full/"
-        });
-        await pyodide.loadPackage(['pyflakes']);
-        isPyodideLoaded = true;
-      } catch (err) {
-        console.error("Failed to load Pyodide:", err);
-      }
-    }
-
-    loadPyodide();
+    loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.25.0/full/" }).then(instance => {
+      pyodide = instance;
+      return pyodide.loadPackage(['pyflakes']);
+    }).then(() => {
+      isPyodideLoaded = true;
+    });
 
     function toggleMenu() {
       const menu = document.getElementById('menu');
       menuOpen = !menuOpen;
-
-      if (menuOpen) {
-        menu.classList.add('menu-open');
-        document.getElementById('screen1').classList.add('blur-content');
-        if (document.getElementById('screen2').style.display === 'flex') {
-          document.getElementById('screen2').classList.add('blur-content');
-        }
-      } else {
-        menu.classList.remove('menu-open');
-        document.getElementById('screen1').classList.remove('blur-content');
-        document.getElementById('screen2').classList.remove('blur-content');
-      }
-    }
-
-    function showCreatorInfo() {
-      toggleMenu();
-      alert("LT Code Editor был создан командой энтузиастов для удобной проверки кода.");
+      menu.classList.toggle('menu-open');
     }
 
     function startEditor() {
       document.getElementById('screen1').style.display = 'none';
       document.getElementById('screen2').style.display = 'flex';
 
-      setTimeout(() => {
-        require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' }});
-        require(['vs/editor/editor.main'], function () {
-          editorInstance = monaco.editor.create(document.getElementById('editor'), {
-            value: `function hello() {\n  console.log("Привет, LT Code Editor!");\n}`,
-            language: 'javascript',
-            theme: 'vs-dark',
-            fontSize: window.innerWidth < 768 ? 16 : 14,
-            automaticLayout: true,
-            autoIndent: "full",
-            wordWrap: "on",
-            minimap: { enabled: false }
-          });
+      require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' }});
+      require(['vs/editor/editor.main'], function () {
+        editorInstance = monaco.editor.create(document.getElementById('editor'), {
+          value: `function hello() {\n  console.log("Привет, LT Code Editor!");\n}`,
+          language: 'javascript',
+          theme: 'vs-dark',
+          automaticLayout: true
         });
-      }, 100);
+      });
     }
 
     function changeLanguage() {
-      const language = document.getElementById('language-selector').value;
+      const lang = document.getElementById('language-selector').value;
       const model = editorInstance.getModel();
 
-      if (language === 'javascript') {
+      if (lang === 'javascript') {
         monaco.editor.setModelLanguage(model, 'javascript');
         editorInstance.setValue(`function hello() {\n  console.log("Привет, LT Code Editor!");\n}`);
-      } else if (language === 'python') {
+      } else {
         monaco.editor.setModelLanguage(model, 'python');
         editorInstance.setValue(`def hello():\n    print("Привет, LT Code Editor!")`);
       }
     }
 
-    async function checkCode() {
+    function checkCode() {
       const code = editorInstance.getValue();
-      const resultDiv = document.getElementById('result');
-      const language = document.getElementById('language-selector').value;
+      const result = document.getElementById('result');
+      const lang = document.getElementById('language-selector').value;
 
-      resultDiv.textContent = "Проверяем код...";
-      resultDiv.style.color = 'var(--text-light)';
-
-      try {
-        if (language === 'javascript') {
+      if (lang === 'javascript') {
+        try {
           new Function(code);
-          resultDiv.style.color = 'var(--success)';
-          resultDiv.textContent = '✅ Ошибок не обнаружено.';
-        } else if (language === 'python') {
-          if (!isPyodideLoaded) {
-            resultDiv.style.color = 'var(--error)';
-            resultDiv.textContent = '❌ Python еще загружается, попробуйте позже.';
-            return;
-          }
-
-          try {
-            await pyodide.runPythonAsync(`
-              import ast
-              try:
-                  ast.parse("""${code.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n')}""")
-              except SyntaxError as e:
-                  raise Exception(f"Синтаксическая ошибка: {e.msg} (строка {e.lineno})")
-            `);
-
-            await pyodide.runPythonAsync(code);
-            resultDiv.style.color = 'var(--success)';
-            resultDiv.textContent = '✅ Ошибок не обнаружено.';
-          } catch (runtimeErr) {
-            resultDiv.style.color = 'var(--error)';
-            resultDiv.textContent = `❌ Ошибка выполнения: ${runtimeErr.message}`;
-          }
+          result.style.color = 'var(--success)';
+          result.textContent = '✅ Ошибок не обнаружено.';
+        } catch (e) {
+          result.style.color = getComputedStyle(document.getElementById('error-color')).backgroundColor;
+          result.textContent = `❌ Ошибка: ${e.message}`;
         }
-      } catch (err) {
-        resultDiv.style.color = 'var(--error)';
-        resultDiv.textContent = `❌ Ошибка ${language === 'javascript' ? 'JavaScript' : 'Python'}: ${err.message}`;
+      } else {
+        if (!isPyodideLoaded) {
+          result.style.color = 'var(--error)';
+          result.textContent = '❌ Python ещё загружается...';
+          return;
+        }
+
+        pyodide.runPythonAsync(`import ast\nast.parse("""${code.replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g, "\\n")}""")`).then(() => {
+          result.style.color = 'var(--success)';
+          result.textContent = '✅ Ошибок не обнаружено.';
+        }).catch(err => {
+          result.style.color = getComputedStyle(document.getElementById('error-color')).backgroundColor;
+          result.textContent = `❌ Ошибка Python: ${err.message}`;
+        });
       }
     }
 
-    function copyCode() {
-      const code = editorInstance.getValue();
-      navigator.clipboard.writeText(code).then(() => {
-        const resultDiv = document.getElementById('result');
-        resultDiv.style.color = 'var(--text-light)';
-        resultDiv.textContent = '📋 Код скопирован в буфер обмена!';
-      }).catch(() => {
-        alert("Ошибка при копировании.");
-      });
+    function updateErrorColor() {
+      const newColor = document.getElementById('error-color').value;
+      document.documentElement.style.setProperty('--error', newColor);
+    }
+
+    function changeTheme(value) {
+      document.documentElement.setAttribute('data-theme', value);
+    }
+
+    function showAbout() {
+      alert("LT Code Editor — это современный веб-редактор кода с поддержкой проверки ошибок, смены тем и работы с Python и JavaScript.");
+      toggleMenu();
+    }
+
+    function showSettings() {
+      document.getElementById('screen1').style.display = 'none';
+      document.getElementById('screen2').style.display = 'none';
+      document.getElementById('settings-screen').style.display = 'flex';
+      toggleMenu();
+    }
+
+    function showMain() {
+      document.getElementById('settings-screen').style.display = 'none';
+      document.getElementById('screen2').style.display = 'flex';
     }
   </script>
 </body>
