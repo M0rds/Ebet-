@@ -291,32 +291,110 @@
       min-height: 20px;
     }
 
-    #settings-panel {
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 200;
       display: none;
-      padding: 1rem;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
       background: var(--bg-light);
-      color: var(--text-light);
-      border-top: 1px solid #333;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 400px;
+      padding: 1.5rem;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+      animation: modalFadeIn 0.3s ease-out;
     }
 
-    #settings-panel h3 {
+    @keyframes modalFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-title {
+      font-size: 1.3rem;
+      color: var(--text-light);
+      font-weight: 600;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .modal-close:hover {
+      transform: rotate(90deg);
+    }
+
+    .modal-body {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .setting-group {
       margin-bottom: 1rem;
-      color: var(--text-light);
     }
 
-    #settings-panel label {
+    .setting-label {
       display: block;
       margin-bottom: 0.5rem;
+      color: var(--text-light);
     }
 
-    #settings-panel input[type="color"],
-    #settings-panel select {
+    .setting-input {
+      width: 100%;
+      padding: 0.75rem;
       background: #3c3c3c;
-      color: white;
       border: 1px solid var(--primary);
-      padding: 0.5rem;
+      border-radius: 8px;
+      color: white;
+      font-family: 'Fira Code', monospace;
+    }
+
+    .color-input-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .color-input {
+      width: 50px;
+      height: 30px;
+      padding: 0;
+      border: none;
+      background: none;
+      cursor: pointer;
+    }
+
+    .color-input::-webkit-color-swatch {
       border-radius: 6px;
-      margin-top: 0.3rem;
+      border: 2px solid var(--primary);
     }
 
     @media (max-width: 768px) {
@@ -377,27 +455,10 @@
         <i class="fas fa-info-circle"></i>
         <span>О программе</span>
       </a>
-      <a href="#" class="menu-item">
+      <a href="#" class="menu-item" onclick="openSettingsModal()">
         <i class="fas fa-cog"></i>
         <span>Настройки</span>
       </a>
-    </div>
-
-    <div id="settings-panel">
-      <h3>Настройки</h3>
-      <label>
-        Цвет подсветки ошибок:
-        <input type="color" id="error-color-picker" value="#ff5555">
-      </label>
-      <br><br>
-      <label>
-        Тема:
-        <select id="theme-selector">
-          <option value="vs-dark">Чёрная (по умолчанию)</option>
-          <option value="vs-light">Белая</option>
-          <option value="hc-black">Серая</option>
-        </select>
-      </label>
     </div>
 
     <div id="screen1">
@@ -427,6 +488,34 @@
           </button>
         </div>
         <div id="result">Готов к работе</div>
+      </div>
+    </div>
+
+    <div id="settings-modal" class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-title">Настройки редактора</div>
+          <button class="modal-close" onclick="closeSettingsModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="setting-group">
+            <label class="setting-label">Цвет подсветки ошибок:</label>
+            <div class="color-input-wrapper">
+              <input type="color" id="error-color-picker" class="color-input" value="#ff5555">
+              <span id="error-color-value">#ff5555</span>
+            </div>
+          </div>
+          <div class="setting-group">
+            <label class="setting-label">Тема редактора:</label>
+            <select id="theme-selector" class="setting-input">
+              <option value="vs-dark">Чёрная (по умолчанию)</option>
+              <option value="vs-light">Белая</option>
+              <option value="hc-black">Серая</option>
+            </select>
+          </div>
+        </div>
       </div>
     </div>
   </main>
@@ -478,6 +567,21 @@
     function showCreatorInfo() {
       toggleMenu();
       window.open("https://t.me/M0rds", "_blank");
+    }
+
+    function openSettingsModal() {
+      toggleMenu();
+      document.getElementById('settings-modal').style.display = 'flex';
+      document.getElementById('screen1').classList.add('blur-content');
+      if (document.getElementById('screen2').style.display === 'flex') {
+        document.getElementById('screen2').classList.add('blur-content');
+      }
+    }
+
+    function closeSettingsModal() {
+      document.getElementById('settings-modal').style.display = 'none';
+      document.getElementById('screen1').classList.remove('blur-content');
+      document.getElementById('screen2').classList.remove('blur-content');
     }
     
     function startEditor() {
@@ -568,20 +672,9 @@
       });
     }
 
-    document.querySelectorAll('.menu-item').forEach(item => {
-      item.addEventListener('click', function () {
-        const text = this.innerText.trim();
-        if (text === 'Настройки') {
-          toggleMenu();
-          document.getElementById('settings-panel').style.display = 'block';
-        } else {
-          document.getElementById('settings-panel').style.display = 'none';
-        }
-      });
-    });
-
-    document.getElementById('error-color-picker').addEventListener('input', function () {
+    document.getElementById('error-color-picker').addEventListener('input', function() {
       const color = this.value;
+      document.getElementById('error-color-value').textContent = color;
       monaco.editor.setTheme(currentTheme);
       monaco.editor.defineTheme('custom-theme', {
         base: currentTheme,
@@ -592,10 +685,18 @@
       monaco.editor.setTheme('custom-theme');
     });
 
-    document.getElementById('theme-selector').addEventListener('change', function () {
+    document.getElementById('theme-selector').addEventListener('change', function() {
       const selected = this.value;
       currentTheme = selected;
-      monaco.editor.setTheme(selected);
+      if (editorInstance) {
+        monaco.editor.setTheme(selected);
+      }
+    });
+
+    document.getElementById('settings-modal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSettingsModal();
+      }
     });
   </script>
 </body>
