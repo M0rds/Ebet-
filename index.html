@@ -48,13 +48,14 @@
     #menu {
       position: fixed;
       top: 0;
-      left: calc(-1 * var(--menu-width));
+      left: 0;
       width: var(--menu-width);
       height: 100%;
       background: var(--bg-light);
       box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
       z-index: 100;
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transform: translateX(-100%);
+      transition: transform 0.3s ease-in-out;
       padding: 20px;
       display: flex;
       flex-direction: column;
@@ -62,7 +63,7 @@
     }
 
     #menu.menu-open {
-      transform: translateX(var(--menu-width));
+      transform: translateX(0);
     }
 
     .menu-header {
@@ -222,12 +223,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(
-        45deg,
-        transparent 25%,
-        rgba(255, 255, 255, 0.1) 50%,
-        transparent 75%
-      );
+      background: linear-gradient(45deg, transparent 25%, rgba(255, 255, 255, 0.1) 50%, transparent 75%);
       background-size: 400% 400%;
       z-index: -1;
       transition: background-position 0.6s ease;
@@ -312,6 +308,22 @@
 
       #menu {
         width: 85%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .start-button {
+        width: 100%;
+        min-width: unset;
+      }
+
+      #menu-button {
+        width: 40px;
+        height: 40px;
+      }
+
+      #editor {
+        font-size: 16px;
       }
     }
   </style>
@@ -403,7 +415,7 @@
     function toggleMenu() {
       const menu = document.getElementById('menu');
       menuOpen = !menuOpen;
-      
+
       if (menuOpen) {
         menu.classList.add('menu-open');
         document.getElementById('screen1').classList.add('blur-content');
@@ -446,7 +458,7 @@
     function changeLanguage() {
       const language = document.getElementById('language-selector').value;
       const model = editorInstance.getModel();
-      
+
       if (language === 'javascript') {
         monaco.editor.setModelLanguage(model, 'javascript');
         editorInstance.setValue(`function hello() {\n  console.log("Привет, LT Code Editor!");\n}`);
@@ -475,7 +487,7 @@
             resultDiv.textContent = '❌ Python еще загружается, попробуйте позже.';
             return;
           }
-          
+
           try {
             await pyodide.runPythonAsync(`
               import ast
@@ -484,7 +496,7 @@
               except SyntaxError as e:
                   raise Exception(f"Синтаксическая ошибка: {e.msg} (строка {e.lineno})")
             `);
-            
+
             await pyodide.runPythonAsync(code);
             resultDiv.style.color = 'var(--success)';
             resultDiv.textContent = '✅ Ошибок не обнаружено.';
