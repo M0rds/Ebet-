@@ -7,6 +7,7 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <style>
+    /* Стили остаются такими же, как в предыдущем коде */
     @import url('https://fonts.googleapis.com/css2?family=Fira+Code&display=swap');
 
     html, body {
@@ -175,6 +176,7 @@
         pyodide = await loadPyodide({
           indexURL: "https://cdn.jsdelivr.net/pyodide/v0.25.0/full/"
         });
+        await pyodide.loadPackage(['pyflakes']);
         isPyodideLoaded = true;
         console.log("Pyodide loaded successfully");
       } catch (err) {
@@ -242,12 +244,27 @@
           }
           
           try {
-            await pyodide.runPythonAsync(code);
-            resultDiv.style.color = '#6a9955';
-            resultDiv.textContent = '✅ Ошибок не обнаружено.';
-          } catch (err) {
+            // Сначала проверяем синтаксис
+            await pyodide.runPythonAsync(`
+              import ast
+              try:
+                  ast.parse("""${code.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n')}""")
+              except SyntaxError as e:
+                  raise Exception(f"Синтаксическая ошибка: {e.msg} (строка {e.lineno})")
+            `);
+            
+            // Если синтаксис верный, проверяем выполнение
+            try {
+              await pyodide.runPythonAsync(code);
+              resultDiv.style.color = '#6a9955';
+              resultDiv.textContent = '✅ Ошибок не обнаружено.';
+            } catch (runtimeErr) {
+              resultDiv.style.color = '#f44747';
+              resultDiv.textContent = `❌ Ошибка выполнения: ${runtimeErr.message}`;
+            }
+          } catch (syntaxErr) {
             resultDiv.style.color = '#f44747';
-            resultDiv.textContent = `❌ Ошибка Python: ${err.message}`;
+            resultDiv.textContent = `❌ ${syntaxErr.message}`;
           }
         }
       } catch (err) {
