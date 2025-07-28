@@ -538,7 +538,7 @@
         pyodide = await loadPyodide({
           indexURL: "https://cdn.jsdelivr.net/pyodide/v0.25.0/full/"
         });
-        await pyodide.loadPackage(['pyflakes']);
+        await pyodide.loadPackage(['pyflakes', 'numpy', 'pandas']);
         isPyodideLoaded = true;
       } catch (err) {
         console.error("Failed to load Pyodide:", err);
@@ -591,15 +591,88 @@
       setTimeout(() => {
         require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' }});
         require(['vs/editor/editor.main'], function () {
+          monaco.languages.registerCompletionItemProvider('python', {
+            provideCompletionItems: function(model, position) {
+              const suggestions = [
+                {
+                  label: 'print',
+                  kind: monaco.languages.CompletionItemKind.Function,
+                  documentation: 'Выводит текст в консоль',
+                  insertText: 'print(${1:"текст"})',
+                  insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+                },
+                {
+                  label: 'def',
+                  kind: monaco.languages.CompletionItemKind.Keyword,
+                  documentation: 'Определение функции',
+                  insertText: 'def ${1:function_name}(${2:params}):\n    ${3:pass}',
+                  insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+                },
+                {
+                  label: 'for',
+                  kind: monaco.languages.CompletionItemKind.Keyword,
+                  documentation: 'Цикл for',
+                  insertText: 'for ${1:item} in ${2:iterable}:\n    ${3:pass}',
+                  insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+                },
+                {
+                  label: 'if',
+                  kind: monaco.languages.CompletionItemKind.Keyword,
+                  documentation: 'Условный оператор',
+                  insertText: 'if ${1:condition}:\n    ${2:pass}',
+                  insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+                },
+                {
+                  label: 'import',
+                  kind: monaco.languages.CompletionItemKind.Keyword,
+                  documentation: 'Импорт модуля',
+                  insertText: 'import ${1:module}',
+                  insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+                }
+              ];
+              return { suggestions: suggestions };
+            }
+          });
+
+          monaco.languages.registerHoverProvider('python', {
+            provideHover: function(model, position) {
+              const word = model.getWordAtPosition(position);
+              if (word) {
+                const wordText = word.word;
+                const pythonDocs = {
+                  'print': 'Выводит текст в консоль. Пример: `print("Hello")`',
+                  'def': 'Определяет функцию. Пример: `def my_func(): pass`',
+                  'for': 'Цикл по элементам. Пример: `for x in range(10): print(x)`',
+                  'if': 'Условный оператор. Пример: `if x > 0: print("Positive")`',
+                  'import': 'Импортирует модуль. Пример: `import math`'
+                };
+                
+                if (pythonDocs[wordText]) {
+                  return {
+                    contents: [
+                      { value: '**' + wordText + '**' },
+                      { value: pythonDocs[wordText] }
+                    ]
+                  };
+                }
+              }
+              return null;
+            }
+          });
+
           editorInstance = monaco.editor.create(document.getElementById('editor'), {
-            value: `function hello() {\n  console.log("Привет, LT Code Editor!");\n}`,
-            language: 'javascript',
+            value: `def hello():\n    print("Привет, LT Code Editor!")`,
+            language: 'python',
             theme: currentTheme,
             fontSize: window.innerWidth < 768 ? 16 : 14,
             automaticLayout: true,
             autoIndent: "full",
             wordWrap: "on",
-            minimap: { enabled: false }
+            minimap: { enabled: false },
+            suggest: {
+              preview: true,
+              snippetsPreventQuickSuggestions: false
+            }
           });
         });
       }, 100);
@@ -630,26 +703,7 @@
         if (language === 'javascript') {
           new Function(code);
           resultDiv.style.color = 'var(--success)';
-          resultDiv.textContent = '✅ Ошибок не обнаружено.';
-        } else if (language === 'python') {
-          if (!isPyodideLoaded) {
-            resultDiv.style.color = 'var(--error)';
-            resultDiv.textContent = '❌ Python еще загружается, попробуйте позже.';
-            return;
-          }
-
-          try {
-            await pyodide.runPythonAsync(`
-              import ast
-              try:
-                  ast.parse("""${code.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n')}""")
-              except SyntaxError as e:
-                  raise Exception(f"Синтаксическая ошибка: {e.msg} (строка {e.lineno})")
-            `);
-
-            await pyodide.runPythonAsync(code);
-            resultDiv.style.color = 'var(--success)';
-            resultDiv.textContent = '✅ Ошибок не обнаружено.';
+          resultDiv.textContent = '✅ Ошибок не обнаружено.' + (result ? ` Результат: ${result}` : '');
           } catch (runtimeErr) {
             resultDiv.style.color = 'var(--error)';
             resultDiv.textContent = `❌ Ошибка выполнения: ${runtimeErr.message}`;
