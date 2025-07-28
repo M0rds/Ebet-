@@ -2,253 +2,31 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LT Code Editor</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Montserrat:wght@500;600;700&display=swap');
-
     :root {
-      --primary: #007acc;
-      --primary-dark: #0062a3;
       --bg: #1e1e1e;
-      --bg-light: #252526;
-      --text: #e0e0e0;
-      --text-light: #9cdcfe;
-      --error: #f44747;
-      --success: #6a9955;
-      --menu-width: 280px;
+      --bg-light: #2c2c2c;
+      --text-light: #f0f0f0;
+      --primary: #5e81ac;
+      --primary-dark: #4c6a92;
+      --success: #00c853;
+      --error: #ff5555;
     }
 
-    * {
+    body {
       margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    html, body {
-      height: 100%;
-      width: 100%;
-      background-color: var(--bg);
-      font-family: 'Montserrat', sans-serif;
-      color: var(--text);
-      -webkit-tap-highlight-color: transparent;
-      overflow: hidden;
+      font-family: 'Fira Code', monospace;
+      background: var(--bg);
+      color: var(--text-light);
     }
 
     main {
-      height: 100%;
-      width: 100%;
       display: flex;
       flex-direction: column;
-      position: relative;
-    }
-
-    #menu {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: var(--menu-width);
-      height: 100%;
-      background: var(--bg-light);
-      box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
-      z-index: 100;
-      transform: translateX(-100%);
-      transition: transform 0.3s ease-in-out;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-
-    #menu.menu-open {
-      transform: translateX(0);
-    }
-
-    .menu-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-bottom: 15px;
-      border-bottom: 1px solid #333;
-      margin-bottom: 10px;
-    }
-
-    .menu-title {
-      font-size: 1.2rem;
-      font-weight: 600;
-      color: var(--text-light);
-    }
-
-    .menu-close {
-      background: none;
-      border: none;
-      color: var(--text);
-      font-size: 1.5rem;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-
-    .menu-close:hover {
-      transform: rotate(90deg);
-    }
-
-    .menu-item {
-      padding: 12px 15px;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      cursor: pointer;
-      transition: all 0.2s;
-      text-decoration: none;
-      color: var(--text);
-    }
-
-    .menu-item:hover {
-      background: rgba(0, 122, 204, 0.2);
-      color: var(--text-light);
-    }
-
-    .menu-item i {
-      width: 20px;
-      text-align: center;
-    }
-
-    #menu-button {
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      z-index: 50;
-      background: rgba(30, 30, 30, 0.8);
-      backdrop-filter: blur(5px);
-      border: none;
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      transition: all 0.3s;
-    }
-
-    #menu-button:hover {
-      background: var(--primary);
-      transform: scale(1.05);
-    }
-
-    #menu-button i {
-      color: white;
-      font-size: 1.2rem;
-    }
-
-    #screen1, #screen2 {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem;
-      transition: filter 0.3s;
-    }
-
-    #screen2 {
-      display: none;
-      padding: 0;
-    }
-
-    .blur-content {
-      filter: blur(3px);
-      pointer-events: none;
-    }
-
-    h2 {
-      color: white;
-      font-size: 2.2rem;
-      margin-bottom: 1.5rem;
-      text-align: center;
-      font-weight: 700;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-      background: linear-gradient(90deg, #007acc, #00a8ff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    #user {
-      color: var(--text-light);
-      font-size: 1.1rem;
-      text-align: center;
-      margin-bottom: 2.5rem;
-      max-width: 600px;
-      line-height: 1.6;
-      opacity: 0.9;
-    }
-
-    .start-button {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 1.2rem 2.5rem;
-      border-radius: 12px;
-      font-size: 1.1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-      box-shadow: 0 4px 15px rgba(0, 122, 204, 0.4);
-      position: relative;
-      overflow: hidden;
-      z-index: 1;
-      min-width: 220px;
-      text-align: center;
-    }
-
-    .start-button:hover {
-      background: var(--primary-dark);
-      box-shadow: 0 6px 20px rgba(0, 122, 204, 0.6);
-      transform: translateY(-2px);
-    }
-
-    .start-button:active {
-      transform: translateY(0);
-    }
-
-    .start-button::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(45deg, transparent 25%, rgba(255, 255, 255, 0.1) 50%, transparent 75%);
-      background-size: 400% 400%;
-      z-index: -1;
-      transition: background-position 0.6s ease;
-    }
-
-    .start-button:hover::after {
-      background-position: 100% 100%;
-      animation: shine 1.5s infinite;
-    }
-
-    @keyframes shine {
-      0% {
-        background-position: 0% 50%;
-      }
-      100% {
-        background-position: 100% 50%;
-      }
-    }
-
-    #editor-container {
-      flex: 1;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      position: relative;
+      height: 100vh;
     }
 
     #editor {
@@ -289,6 +67,94 @@
       color: var(--text-light);
       border-top: 1px solid #333;
       min-height: 20px;
+    }
+
+    #menu {
+      position: fixed;
+      top: 0;
+      left: -300px;
+      width: 300px;
+      height: 100%;
+      background: #222;
+      color: white;
+      transition: left 0.3s ease;
+      z-index: 1000;
+    }
+
+    .menu-open {
+      left: 0 !important;
+    }
+
+    .menu-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      border-bottom: 1px solid #444;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem;
+      cursor: pointer;
+      text-decoration: none;
+      color: white;
+    }
+
+    .menu-item:hover {
+      background: #333;
+    }
+
+    #menu-button {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      z-index: 1100;
+    }
+
+    #screen1,
+    #screen2 {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    #screen2 {
+      display: none;
+    }
+
+    .start-button {
+      background: var(--primary);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      padding: 1rem 2rem;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+      font-family: 'Fira Code', monospace;
+    }
+
+    .start-button:hover {
+      background: var(--primary-dark);
+    }
+
+    #settings-panel {
+      display: none;
+      padding: 1rem;
+      background: var(--bg);
+      color: var(--text-light);
+      border-top: 1px solid #333;
     }
 
     @media (max-width: 768px) {
@@ -384,11 +250,27 @@
         <div id="result">Готов к работе</div>
       </div>
     </div>
+
+    <div id="settings-panel">
+      <h3>Настройки</h3>
+      <label>
+        Цвет подсветки ошибок:
+        <input type="color" id="error-color-picker" value="#ff5555">
+      </label>
+      <br><br>
+      <label>
+        Тема:
+        <select id="theme-selector">
+          <option value="vs-dark">Чёрная (по умолчанию)</option>
+          <option value="vs-light">Белая</option>
+          <option value="hc-black">Серая</option>
+        </select>
+      </label>
+    </div>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pyodide@0.25.0/pyodide.js"></script>
-
   <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
@@ -397,6 +279,7 @@
     let pyodide;
     let isPyodideLoaded = false;
     let menuOpen = false;
+    let currentTheme = 'vs-dark';
 
     async function loadPyodide() {
       try {
@@ -415,7 +298,6 @@
     function toggleMenu() {
       const menu = document.getElementById('menu');
       menuOpen = !menuOpen;
-
       if (menuOpen) {
         menu.classList.add('menu-open');
         document.getElementById('screen1').classList.add('blur-content');
@@ -431,7 +313,7 @@
 
     function showCreatorInfo() {
       toggleMenu();
-      alert("@M0rds");
+      window.open("https://t.me/M0rds", "_blank");
     }
 
     function startEditor() {
@@ -444,7 +326,7 @@
           editorInstance = monaco.editor.create(document.getElementById('editor'), {
             value: `function hello() {\n  console.log("Привет, LT Code Editor!");\n}`,
             language: 'javascript',
-            theme: 'vs-dark',
+            theme: currentTheme,
             fontSize: window.innerWidth < 768 ? 16 : 14,
             automaticLayout: true,
             autoIndent: "full",
@@ -458,7 +340,6 @@
     function changeLanguage() {
       const language = document.getElementById('language-selector').value;
       const model = editorInstance.getModel();
-
       if (language === 'javascript') {
         monaco.editor.setModelLanguage(model, 'javascript');
         editorInstance.setValue(`function hello() {\n  console.log("Привет, LT Code Editor!");\n}`);
@@ -472,10 +353,8 @@
       const code = editorInstance.getValue();
       const resultDiv = document.getElementById('result');
       const language = document.getElementById('language-selector').value;
-
       resultDiv.textContent = "Проверяем код...";
       resultDiv.style.color = 'var(--text-light)';
-
       try {
         if (language === 'javascript') {
           new Function(code);
@@ -487,7 +366,6 @@
             resultDiv.textContent = '❌ Python еще загружается, попробуйте позже.';
             return;
           }
-
           try {
             await pyodide.runPythonAsync(`
               import ast
@@ -496,7 +374,6 @@
               except SyntaxError as e:
                   raise Exception(f"Синтаксическая ошибка: {e.msg} (строка {e.lineno})")
             `);
-
             await pyodide.runPythonAsync(code);
             resultDiv.style.color = 'var(--success)';
             resultDiv.textContent = '✅ Ошибок не обнаружено.';
@@ -521,6 +398,35 @@
         alert("Ошибка при копировании.");
       });
     }
+
+    document.querySelectorAll('.menu-item').forEach(item => {
+      item.addEventListener('click', function () {
+        const text = this.innerText.trim();
+        if (text === 'Настройки') {
+          toggleMenu();
+          document.getElementById('settings-panel').style.display = 'block';
+        } else {
+          document.getElementById('settings-panel').style.display = 'none';
+        }
+      });
+    });
+
+    document.getElementById('error-color-picker').addEventListener('input', function () {
+      const color = this.value;
+      monaco.editor.defineTheme('custom-theme', {
+        base: currentTheme,
+        inherit: true,
+        rules: [{ token: 'invalid', foreground: color.replace('#', '') }],
+        colors: {}
+      });
+      monaco.editor.setTheme('custom-theme');
+    });
+
+    document.getElementById('theme-selector').addEventListener('change', function () {
+      const selected = this.value;
+      currentTheme = selected;
+      monaco.editor.setTheme(selected);
+    });
   </script>
 </body>
 </html>
