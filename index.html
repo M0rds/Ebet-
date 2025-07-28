@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>@LeakTools_bot — LT Code Editor</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
@@ -12,8 +12,9 @@
       --bg-color: #1e1e1e;
       --panel-color: #252526;
       --text-color: #d4d4d4;
-      --accent-color: #007acc;
-      --button-hover: #005a9e;
+      --accent-color: #0096ff;
+      --button-hover: #007acc;
+      --highlight-color: #9cdcfe;
     }
 
     * {
@@ -32,16 +33,17 @@
 
     header, footer {
       background-color: var(--panel-color);
-      padding: 1rem 1.5rem;
+      padding: 1rem 2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
 
     header div {
-      font-size: 1rem;
-      color: #ffffff;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--highlight-color);
     }
 
     main {
@@ -52,64 +54,76 @@
       justify-content: center;
       padding: 2rem;
       text-align: center;
+      animation: fadeIn 0.6s ease-in-out;
     }
 
     h2 {
-      font-weight: normal;
+      font-size: 2rem;
+      margin-bottom: 1rem;
       color: var(--text-color);
-      margin-bottom: 0.75rem;
-      font-size: 1.5rem;
     }
 
     p#user {
-      font-size: 1rem;
-      color: #9cdcfe;
-      margin-bottom: 1.5rem;
-      max-width: 600px;
+      font-size: 1.1rem;
+      color: var(--highlight-color);
+      max-width: 640px;
+      margin-bottom: 2rem;
+      line-height: 1.6;
     }
 
     button {
-      background-color: var(--accent-color);
+      background: linear-gradient(to right, var(--accent-color), #00c2ff);
       color: white;
       border: none;
-      padding: 0.75rem 1.5rem;
+      padding: 0.9rem 2rem;
       font-size: 1rem;
-      border-radius: 6px;
+      font-weight: 500;
+      border-radius: 8px;
       cursor: pointer;
-      transition: background 0.2s ease;
-      width: 100%;
-      max-width: 240px;
+      transition: background 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0, 150, 255, 0.25);
     }
 
     button:hover {
-      background-color: var(--button-hover);
+      background: linear-gradient(to right, var(--button-hover), #00aaff);
+      transform: translateY(-2px);
+    }
+
+    button:active {
+      transform: scale(0.98);
     }
 
     footer {
-      text-align: center;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       color: #6a9955;
+      padding: 1rem 2rem;
+      justify-content: center;
     }
 
-    @media (min-width: 600px) {
-      button {
-        width: auto;
+    @media (max-width: 600px) {
+      header, footer {
+        flex-direction: column;
+        text-align: center;
       }
 
       header div {
-        font-size: 1.1rem;
+        margin-bottom: 0.3rem;
       }
 
-      h2 {
-        font-size: 2rem;
+      button {
+        width: 100%;
+        max-width: 280px;
       }
+    }
 
-      p#user {
-        font-size: 1.1rem;
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
       }
-
-      footer {
-        text-align: right;
+      to {
+        opacity: 1;
+        transform: translateY(0);
       }
     }
   </style>
@@ -135,7 +149,7 @@
     tg.expand();
     const user = tg.initDataUnsafe.user;
     document.getElementById('user').textContent =
-      `Ты попал в LT Code Editor, который поможет тебе написать код, и проверить при помощи AI, код на ошибки!`;
+      `Ты попал в LT Code Editor, который поможет тебе писать код и проверять его на ошибки с помощью AI.`;
   </script>
 </body>
 </html>
