@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Telegram WebApp</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 30px;
+      text-align: center;
+      background-color: #f5f5f5;
+    }
+    button {
+      padding: 12px 20px;
+      font-size: 16px;
+      background-color: #0088cc;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>Привет из Telegram WebApp 👋</h2>
+  <p id="user">Загрузка...</p>
+  <button onclick="Telegram.WebApp.close()">Закрыть</button>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+    const user = tg.initDataUnsafe.user;
+    document.getElementById('user').textContent =
+      `Добро пожаловать, ${user?.first_name || "гость"}!`;
+  </script>
+</body>
+</html>
