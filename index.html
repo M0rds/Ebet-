@@ -3,153 +3,100 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>@LeakTools_bot — LT Code Editor</title>
+  <title>LT Code Editor</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Fira+Code&display=swap');
-
-    :root {
-      --bg-color: #1e1e1e;
-      --panel-color: #252526;
-      --text-color: #d4d4d4;
-      --accent-color: #0096ff;
-      --button-hover: #007acc;
-      --highlight-color: #9cdcfe;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
 
     body {
       margin: 0;
       font-family: 'Fira Code', monospace;
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-
-    header, footer {
-      background-color: var(--panel-color);
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
-
-    header div {
-      font-size: 1.2rem;
-      font-weight: bold;
-      color: var(--highlight-color);
+      background-color: #1e1e1e;
+      color: #d4d4d4;
+      height: 100vh;
+      overflow: hidden;
     }
 
     main {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #screen1, #screen2 {
       flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 2rem;
-      text-align: center;
-      animation: fadeIn 0.6s ease-in-out;
     }
 
-    h2 {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-      color: var(--text-color);
-    }
-
-    p#user {
-      font-size: 1.1rem;
-      color: var(--highlight-color);
-      max-width: 640px;
-      margin-bottom: 2rem;
-      line-height: 1.6;
+    #screen2 {
+      display: none;
+      padding: 0;
     }
 
     button {
-      background: linear-gradient(to right, var(--accent-color), #00c2ff);
+      background: #007acc;
       color: white;
       border: none;
-      padding: 0.9rem 2rem;
+      padding: 0.8rem 1.6rem;
+      border-radius: 6px;
       font-size: 1rem;
-      font-weight: 500;
-      border-radius: 8px;
       cursor: pointer;
-      transition: background 0.3s ease, transform 0.2s ease;
-      box-shadow: 0 4px 12px rgba(0, 150, 255, 0.25);
+      transition: background 0.3s ease;
     }
 
     button:hover {
-      background: linear-gradient(to right, var(--button-hover), #00aaff);
-      transform: translateY(-2px);
+      background: #005a9e;
     }
 
-    button:active {
-      transform: scale(0.98);
-    }
-
-    footer {
-      font-size: 0.85rem;
-      color: #6a9955;
-      padding: 1rem 2rem;
-      justify-content: center;
-    }
-
-    @media (max-width: 600px) {
-      header, footer {
-        flex-direction: column;
-        text-align: center;
-      }
-
-      header div {
-        margin-bottom: 0.3rem;
-      }
-
-      button {
-        width: 100%;
-        max-width: 280px;
-      }
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    #editor {
+      height: 100%;
+      width: 100%;
     }
   </style>
 </head>
 <body>
-  <header>
-    <div>LeakTools</div>
-    <div>LT Code Editor</div>
-  </header>
-
   <main>
-    <h2>Добро пожаловать в LT Code Editor!</h2>
-    <p id="user">Загрузка...</p>
-    <button onclick="Telegram.WebApp.close()">Начать</button>
+    <div id="screen1">
+      <h2>Добро пожаловать в LT Code Editor!</h2>
+      <p id="user">Загрузка...</p>
+      <button onclick="startEditor()">Начать кодить</button>
+    </div>
+
+    <div id="screen2">
+      <div id="editor"></div>
+    </div>
   </main>
 
-  <footer>
-    © 2025 @LeakTools_bot / @M0rds
-  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
 
   <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
+
     const user = tg.initDataUnsafe.user;
     document.getElementById('user').textContent =
       `Ты попал в LT Code Editor, который поможет тебе писать код и проверять его на ошибки с помощью AI.`;
+
+    function startEditor() {
+      document.getElementById('screen1').style.display = 'none';
+      document.getElementById('screen2').style.display = 'flex';
+
+      require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' }});
+      require(['vs/editor/editor.main'], function () {
+        monaco.editor.create(document.getElementById('editor'), {
+          value: `function hello() {\n  console.log("Привет, LT Code Editor!");\n}`,
+          language: 'javascript',
+          theme: 'vs-dark',
+          fontSize: 14,
+          automaticLayout: true
+        });
+      });
+    }
   </script>
 </body>
 </html>
