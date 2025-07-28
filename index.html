@@ -520,10 +520,10 @@
     </div>
   </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/pyodide@0.25.0/pyodide.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pyodide@0.25.0/pyodide.js"></script>
 
-  <script>
+<script>
     const tg = window.Telegram.WebApp;
     tg.expand();
 
@@ -703,7 +703,26 @@
         if (language === 'javascript') {
           new Function(code);
           resultDiv.style.color = 'var(--success)';
-          resultDiv.textContent = '✅ Ошибок не обнаружено.' + (result ? ` Результат: ${result}` : '');
+          resultDiv.textContent = '✅ Ошибок не обнаружено.';
+        } else if (language === 'python') {
+          if (!isPyodideLoaded) {
+            resultDiv.style.color = 'var(--error)';
+            resultDiv.textContent = '❌ Python еще загружается, попробуйте позже.';
+            return;
+          }
+
+          try {
+            await pyodide.runPythonAsync(`
+              import ast
+              try:
+                  ast.parse("""${code.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n')}""")
+              except SyntaxError as e:
+                  raise Exception(f"Синтаксическая ошибка: {e.msg} (строка {e.lineno})")
+            `);
+
+            const result = await pyodide.runPythonAsync(code);
+            resultDiv.style.color = 'var(--success)';
+            resultDiv.textContent = '✅ Ошибок не обнаружено.' + (result ? ` Результат: ${result}` : '');
           } catch (runtimeErr) {
             resultDiv.style.color = 'var(--error)';
             resultDiv.textContent = `❌ Ошибка выполнения: ${runtimeErr.message}`;
@@ -752,6 +771,6 @@
         closeSettingsModal();
       }
     });
-  </script>
+</script>
 </body>
 </html>
