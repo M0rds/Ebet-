@@ -291,6 +291,34 @@
       min-height: 20px;
     }
 
+    #settings-panel {
+      display: none;
+      padding: 1rem;
+      background: var(--bg-light);
+      color: var(--text-light);
+      border-top: 1px solid #333;
+    }
+
+    #settings-panel h3 {
+      margin-bottom: 1rem;
+      color: var(--text-light);
+    }
+
+    #settings-panel label {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    #settings-panel input[type="color"],
+    #settings-panel select {
+      background: #3c3c3c;
+      color: white;
+      border: 1px solid var(--primary);
+      padding: 0.5rem;
+      border-radius: 6px;
+      margin-top: 0.3rem;
+    }
+
     @media (max-width: 768px) {
       h2 {
         font-size: 1.8rem;
@@ -355,6 +383,23 @@
       </a>
     </div>
 
+    <div id="settings-panel">
+      <h3>Настройки</h3>
+      <label>
+        Цвет подсветки ошибок:
+        <input type="color" id="error-color-picker" value="#ff5555">
+      </label>
+      <br><br>
+      <label>
+        Тема:
+        <select id="theme-selector">
+          <option value="vs-dark">Чёрная (по умолчанию)</option>
+          <option value="vs-light">Белая</option>
+          <option value="hc-black">Серая</option>
+        </select>
+      </label>
+    </div>
+
     <div id="screen1">
       <h2>Добро пожаловать в LT Code Editor!</h2>
       <p id="user">Ты попал в LT Code Editor, который поможет тебе писать код и проверять его на ошибки с помощью AI.</p>
@@ -397,6 +442,7 @@
     let pyodide;
     let isPyodideLoaded = false;
     let menuOpen = false;
+    let currentTheme = 'vs-dark';
 
     async function loadPyodide() {
       try {
@@ -430,8 +476,8 @@
     }
 
     function showCreatorInfo() {
-  toggleMenu();
-  window.open("https://t.me/M0rds", "_blank");
+      toggleMenu();
+      window.open("https://t.me/M0rds", "_blank");
     }
     
     function startEditor() {
@@ -444,7 +490,7 @@
           editorInstance = monaco.editor.create(document.getElementById('editor'), {
             value: `function hello() {\n  console.log("Привет, LT Code Editor!");\n}`,
             language: 'javascript',
-            theme: 'vs-dark',
+            theme: currentTheme,
             fontSize: window.innerWidth < 768 ? 16 : 14,
             automaticLayout: true,
             autoIndent: "full",
@@ -521,6 +567,36 @@
         alert("Ошибка при копировании.");
       });
     }
+
+    document.querySelectorAll('.menu-item').forEach(item => {
+      item.addEventListener('click', function () {
+        const text = this.innerText.trim();
+        if (text === 'Настройки') {
+          toggleMenu();
+          document.getElementById('settings-panel').style.display = 'block';
+        } else {
+          document.getElementById('settings-panel').style.display = 'none';
+        }
+      });
+    });
+
+    document.getElementById('error-color-picker').addEventListener('input', function () {
+      const color = this.value;
+      monaco.editor.setTheme(currentTheme);
+      monaco.editor.defineTheme('custom-theme', {
+        base: currentTheme,
+        inherit: true,
+        rules: [{ token: 'invalid', foreground: color.replace('#', '') }],
+        colors: {}
+      });
+      monaco.editor.setTheme('custom-theme');
+    });
+
+    document.getElementById('theme-selector').addEventListener('change', function () {
+      const selected = this.value;
+      currentTheme = selected;
+      monaco.editor.setTheme(selected);
+    });
   </script>
 </body>
 </html>
