@@ -18,7 +18,7 @@
       --text-light: #9cdcfe;
       --error: #f44747;
       --success: #6a9955;
-      --menu-width: 280px;
+      --menu-width: 240px;
     }
 
     * {
@@ -56,10 +56,10 @@
       z-index: 100;
       transform: translateX(-100%);
       transition: transform 0.3s ease-in-out;
-      padding: 20px;
+      padding: 15px;
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      gap: 10px;
     }
 
     #menu.menu-open {
@@ -70,13 +70,13 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 15px;
+      padding-bottom: 12px;
       border-bottom: 1px solid #333;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .menu-title {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       font-weight: 600;
       color: var(--text-light);
     }
@@ -85,7 +85,7 @@
       background: none;
       border: none;
       color: var(--text);
-      font-size: 1.5rem;
+      font-size: 1.3rem;
       cursor: pointer;
       transition: transform 0.2s;
     }
@@ -95,15 +95,16 @@
     }
 
     .menu-item {
-      padding: 12px 15px;
+      padding: 10px 12px;
       border-radius: 6px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       cursor: pointer;
       transition: all 0.2s;
       text-decoration: none;
       color: var(--text);
+      font-size: 0.9rem;
     }
 
     .menu-item:hover {
@@ -112,20 +113,21 @@
     }
 
     .menu-item i {
-      width: 20px;
+      width: 18px;
       text-align: center;
+      font-size: 0.9rem;
     }
 
     #menu-button {
       position: fixed;
-      top: 20px;
-      left: 20px;
+      top: 15px;
+      left: 15px;
       z-index: 50;
       background: rgba(30, 30, 30, 0.8);
       backdrop-filter: blur(5px);
       border: none;
-      width: 45px;
-      height: 45px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -142,7 +144,7 @@
 
     #menu-button i {
       color: white;
-      font-size: 1.2rem;
+      font-size: 1rem;
     }
 
     #screen1, #screen2 {
@@ -151,7 +153,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 2rem;
+      padding: 1.5rem;
       transition: filter 0.3s;
     }
 
@@ -167,8 +169,8 @@
 
     h2 {
       color: white;
-      font-size: 2.2rem;
-      margin-bottom: 1.5rem;
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
       text-align: center;
       font-weight: 700;
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -180,11 +182,11 @@
 
     #user {
       color: var(--text-light);
-      font-size: 1.1rem;
+      font-size: 0.95rem;
       text-align: center;
-      margin-bottom: 2.5rem;
-      max-width: 600px;
-      line-height: 1.6;
+      margin-bottom: 1.5rem;
+      max-width: 500px;
+      line-height: 1.5;
       opacity: 0.9;
     }
 
@@ -192,9 +194,9 @@
       background: var(--primary);
       color: white;
       border: none;
-      padding: 1.2rem 2.5rem;
-      border-radius: 12px;
-      font-size: 1.1rem;
+      padding: 1rem 2rem;
+      border-radius: 10px;
+      font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -202,7 +204,7 @@
       position: relative;
       overflow: hidden;
       z-index: 1;
-      min-width: 220px;
+      min-width: 180px;
       text-align: center;
     }
 
@@ -247,20 +249,56 @@
       flex: 1;
       width: 100%;
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       position: relative;
+      height: calc(100vh - 120px);
+    }
+
+    #editor-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
     }
 
     #editor {
       flex: 1;
       width: 100%;
+      height: 100%;
+    }
+
+    #output-panel {
+      width: 35%;
+      height: 100%;
+      background: var(--bg-light);
+      border-left: 1px solid #333;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #output-header {
+      padding: 8px 12px;
+      background: #2d2d2d;
+      border-bottom: 1px solid #333;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-light);
+    }
+
+    #output-content {
+      flex: 1;
+      padding: 12px;
+      overflow-y: auto;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+      white-space: pre-wrap;
     }
 
     #controls {
-      padding: 1rem;
+      padding: 0.8rem;
       display: flex;
       flex-wrap: wrap;
-      gap: 0.75rem;
+      gap: 0.6rem;
       justify-content: center;
       background: var(--bg-light);
       border-top: 1px solid #333;
@@ -270,25 +308,39 @@
       background: #3c3c3c;
       color: white;
       border: 1px solid var(--primary);
-      padding: 0.75rem;
-      border-radius: 8px;
+      padding: 0.6rem;
+      border-radius: 6px;
       font-family: 'Fira Code', monospace;
       cursor: pointer;
       transition: all 0.2s;
+      font-size: 0.85rem;
     }
 
     #language-selector:hover {
       border-color: var(--primary-dark);
     }
 
-    #result {
-      padding: 1rem;
-      text-align: center;
-      font-size: 0.95rem;
-      background: var(--bg);
-      color: var(--text-light);
-      border-top: 1px solid #333;
-      min-height: 20px;
+    .control-button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.6rem 1rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .control-button:hover {
+      background: var(--primary-dark);
+    }
+
+    .control-button i {
+      font-size: 0.8rem;
     }
 
     .modal-overlay {
@@ -306,10 +358,10 @@
 
     .modal-content {
       background: var(--bg-light);
-      border-radius: 12px;
+      border-radius: 10px;
       width: 90%;
-      max-width: 400px;
-      padding: 1.5rem;
+      max-width: 350px;
+      padding: 1.2rem;
       box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
       animation: modalFadeIn 0.3s ease-out;
     }
@@ -329,11 +381,11 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.2rem;
     }
 
     .modal-title {
-      font-size: 1.3rem;
+      font-size: 1.1rem;
       color: var(--text-light);
       font-weight: 600;
     }
@@ -342,7 +394,7 @@
       background: none;
       border: none;
       color: var(--text);
-      font-size: 1.5rem;
+      font-size: 1.3rem;
       cursor: pointer;
       transition: transform 0.2s;
     }
@@ -354,27 +406,29 @@
     .modal-body {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 0.8rem;
     }
 
     .setting-group {
-      margin-bottom: 1rem;
+      margin-bottom: 0.8rem;
     }
 
     .setting-label {
       display: block;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.4rem;
       color: var(--text-light);
+      font-size: 0.9rem;
     }
 
     .setting-input {
       width: 100%;
-      padding: 0.75rem;
+      padding: 0.6rem;
       background: #3c3c3c;
       border: 1px solid var(--primary);
-      border-radius: 8px;
+      border-radius: 6px;
       color: white;
       font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
     }
 
     .color-input-wrapper {
@@ -384,8 +438,8 @@
     }
 
     .color-input {
-      width: 50px;
-      height: 30px;
+      width: 40px;
+      height: 25px;
       padding: 0;
       border: none;
       background: none;
@@ -393,27 +447,37 @@
     }
 
     .color-input::-webkit-color-swatch {
-      border-radius: 6px;
+      border-radius: 4px;
       border: 2px solid var(--primary);
     }
 
     @media (max-width: 768px) {
       h2 {
-        font-size: 1.8rem;
+        font-size: 1.5rem;
       }
 
       #user {
-        font-size: 1rem;
+        font-size: 0.85rem;
         padding: 0 1rem;
       }
 
       .start-button {
-        padding: 1rem 2rem;
-        font-size: 1rem;
+        padding: 0.8rem 1.5rem;
+        font-size: 0.9rem;
       }
 
       #menu {
-        width: 85%;
+        width: 80%;
+      }
+
+      #editor-container {
+        flex-direction: column;
+        height: calc(100vh - 150px);
+      }
+
+      #output-panel {
+        width: 100%;
+        height: 30%;
       }
     }
 
@@ -424,12 +488,16 @@
       }
 
       #menu-button {
-        width: 40px;
-        height: 40px;
+        width: 35px;
+        height: 35px;
       }
 
       #editor {
-        font-size: 16px;
+        font-size: 14px;
+      }
+
+      #output-content {
+        font-size: 0.8rem;
       }
     }
   </style>
@@ -465,54 +533,63 @@
       <h2>Добро пожаловать в LT Code Editor!</h2>
       <p id="user">Ты попал в LT Code Editor, который поможет тебе писать код и проверять его на ошибки с помощью AI.</p>
       <button class="start-button" onclick="startEditor()">
-        <i class="fas fa-rocket" style="margin-right: 8px;"></i>
+        <i class="fas fa-rocket" style="margin-right: 6px;"></i>
         Начать
       </button>
     </div>
 
     <div id="screen2">
       <div id="editor-container">
-        <div id="editor"></div>
-        <div id="controls">
-          <select id="language-selector" onchange="changeLanguage()">
-            <option value="javascript">JavaScript</option>
-            <option value="python">Python</option>
-          </select>
-          <button class="start-button" onclick="checkCode()" style="padding: 0.75rem 1.5rem;">
-            <i class="fas fa-check" style="margin-right: 8px;"></i>
-            Проверить код
-          </button>
-          <button class="start-button" onclick="copyCode()" style="padding: 0.75rem 1.5rem;">
-            <i class="fas fa-copy" style="margin-right: 8px;"></i>
-            Скопировать
-          </button>
+        <div id="editor-wrapper">
+          <div id="editor"></div>
         </div>
-        <div id="result">Готов к работе</div>
+        <div id="output-panel">
+          <div id="output-header">Вывод</div>
+          <div id="output-content">Готов к работе</div>
+        </div>
+      </div>
+      <div id="controls">
+        <select id="language-selector" onchange="changeLanguage()">
+          <option value="javascript">JavaScript</option>
+          <option value="python">Python</option>
+        </select>
+        <button class="control-button" onclick="checkCode()">
+          <i class="fas fa-check"></i>
+          Проверить
+        </button>
+        <button class="control-button" onclick="runCode()">
+          <i class="fas fa-play"></i>
+          Запустить
+        </button>
+        <button class="control-button" onclick="copyCode()">
+          <i class="fas fa-copy"></i>
+          Копировать
+        </button>
       </div>
     </div>
 
     <div id="settings-modal" class="modal-overlay">
       <div class="modal-content">
         <div class="modal-header">
-          <div class="modal-title">Настройки редактора</div>
+          <div class="modal-title">Настройки</div>
           <button class="modal-close" onclick="closeSettingsModal()">
             <i class="fas fa-times"></i>
           </button>
         </div>
         <div class="modal-body">
           <div class="setting-group">
-            <label class="setting-label">Цвет подсветки ошибок:</label>
+            <label class="setting-label">Цвет ошибок:</label>
             <div class="color-input-wrapper">
               <input type="color" id="error-color-picker" class="color-input" value="#ff5555">
               <span id="error-color-value">#ff5555</span>
             </div>
           </div>
           <div class="setting-group">
-            <label class="setting-label">Тема редактора:</label>
+            <label class="setting-label">Тема:</label>
             <select id="theme-selector" class="setting-input">
-              <option value="vs-dark">Чёрная (по умолчанию)</option>
-              <option value="vs-light">Белая</option>
-              <option value="hc-black">Серая</option>
+              <option value="vs-dark">Тёмная</option>
+              <option value="vs-light">Светлая</option>
+              <option value="hc-black">Контрастная</option>
             </select>
           </div>
         </div>
@@ -520,10 +597,10 @@
     </div>
   </main>
 
-<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/pyodide@0.25.0/pyodide.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pyodide@0.25.0/pyodide.js"></script>
 
-<script>
+  <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
 
@@ -664,7 +741,7 @@
             value: `def hello():\n    print("Привет, LT Code Editor!")`,
             language: 'python',
             theme: currentTheme,
-            fontSize: window.innerWidth < 768 ? 16 : 14,
+            fontSize: window.innerWidth < 768 ? 14 : 13,
             automaticLayout: true,
             autoIndent: "full",
             wordWrap: "on",
@@ -672,7 +749,9 @@
             suggest: {
               preview: true,
               snippetsPreventQuickSuggestions: false
-            }
+            },
+            scrollBeyondLastLine: false,
+            padding: { top: 10, bottom: 10 }
           });
         });
       }, 100);
@@ -691,23 +770,25 @@
       }
     }
 
+    function updateOutput(content, isError = false) {
+      const outputContent = document.getElementById('output-content');
+      outputContent.innerHTML = content;
+      outputContent.style.color = isError ? 'var(--error)' : 'var(--text-light)';
+    }
+
     async function checkCode() {
       const code = editorInstance.getValue();
-      const resultDiv = document.getElementById('result');
       const language = document.getElementById('language-selector').value;
 
-      resultDiv.textContent = "Проверяем код...";
-      resultDiv.style.color = 'var(--text-light)';
+      updateOutput("Проверяем код...");
 
       try {
         if (language === 'javascript') {
           new Function(code);
-          resultDiv.style.color = 'var(--success)';
-          resultDiv.textContent = '✅ Ошибок не обнаружено.';
+          updateOutput('✅ Ошибок не обнаружено.');
         } else if (language === 'python') {
           if (!isPyodideLoaded) {
-            resultDiv.style.color = 'var(--error)';
-            resultDiv.textContent = '❌ Python еще загружается, попробуйте позже.';
+            updateOutput('❌ Python еще загружается, попробуйте позже.', true);
             return;
           }
 
@@ -719,29 +800,50 @@
               except SyntaxError as e:
                   raise Exception(f"Синтаксическая ошибка: {e.msg} (строка {e.lineno})")
             `);
-
-            const result = await pyodide.runPythonAsync(code);
-            resultDiv.style.color = 'var(--success)';
-            resultDiv.textContent = '✅ Ошибок не обнаружено.' + (result ? ` Результат: ${result}` : '');
+            updateOutput('✅ Ошибок не обнаружено.');
           } catch (runtimeErr) {
-            resultDiv.style.color = 'var(--error)';
-            resultDiv.textContent = `❌ Ошибка выполнения: ${runtimeErr.message}`;
+            updateOutput(`❌ Ошибка выполнения: ${runtimeErr.message}`, true);
           }
         }
       } catch (err) {
-        resultDiv.style.color = 'var(--error)';
-        resultDiv.textContent = `❌ Ошибка ${language === 'javascript' ? 'JavaScript' : 'Python'}: ${err.message}`;
+        updateOutput(`❌ Ошибка ${language === 'javascript' ? 'JavaScript' : 'Python'}: ${err.message}`, true);
+      }
+    }
+
+    async function runCode() {
+      const code = editorInstance.getValue();
+      const language = document.getElementById('language-selector').value;
+
+      updateOutput("Выполняем код...");
+
+      try {
+        if (language === 'javascript') {
+          const result = new Function('return ' + code)();
+          updateOutput('✅ Код выполнен успешно.\n\nРезультат: ' + JSON.stringify(result, null, 2));
+        } else if (language === 'python') {
+          if (!isPyodideLoaded) {
+            updateOutput('❌ Python еще загружается, попробуйте позже.', true);
+            return;
+          }
+
+          try {
+            const result = await pyodide.runPythonAsync(code);
+            updateOutput('✅ Код выполнен успешно.\n\nРезультат: ' + (result !== undefined ? result : 'None'));
+          } catch (runtimeErr) {
+            updateOutput(`❌ Ошибка выполнения: ${runtimeErr.message}`, true);
+          }
+        }
+      } catch (err) {
+        updateOutput(`❌ Ошибка ${language === 'javascript' ? 'JavaScript' : 'Python'}: ${err.message}`, true);
       }
     }
 
     function copyCode() {
       const code = editorInstance.getValue();
       navigator.clipboard.writeText(code).then(() => {
-        const resultDiv = document.getElementById('result');
-        resultDiv.style.color = 'var(--text-light)';
-        resultDiv.textContent = '📋 Код скопирован в буфер обмена!';
+        updateOutput('📋 Код скопирован в буфер обмена!');
       }).catch(() => {
-        alert("Ошибка при копировании.");
+        updateOutput('❌ Ошибка при копировании', true);
       });
     }
 
@@ -771,6 +873,6 @@
         closeSettingsModal();
       }
     });
-</script>
+  </script>
 </body>
 </html>
