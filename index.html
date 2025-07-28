@@ -96,20 +96,24 @@
 </head>
 <body>
   <main>
-    <!-- Экран приветствия -->
     <div id="screen1">
       <h2>Добро пожаловать в LT Code Editor!</h2>
       <p id="user">Загрузка...</p>
-      <button onclick="startEditor()">Начать кодить</button>
+      <button onclick="startEditor()">Начать</button>
     </div>
 
-    <!-- Экран редактора -->
     <div id="screen2">
-      <div id="editor"></div>
+      <div style="display: flex; flex-direction: column; width: 100%; height: 100%;">
+        <div id="editor" style="flex: 1;"></div>
+        <div id="controls" style="padding: 0.75rem; display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; background: #252526;">
+          <button onclick="checkCode()">✅ Проверить код</button>
+          <button onclick="copyCode()">📋 Скопировать код</button>
+          <div id="result" style="margin-top: 0.5rem; color: #9cdcfe; text-align: center; width: 100%; font-size: 0.9rem;"></div>
+        </div>
+      </div>
     </div>
   </main>
 
-  <!-- Подключение Monaco Editor -->
   <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
 
   <script>
@@ -120,16 +124,16 @@
     document.getElementById('user').textContent =
       `Ты попал в LT Code Editor, который поможет тебе писать код и проверять его на ошибки с помощью AI.`;
 
+    let editorInstance;
+
     function startEditor() {
-      // Скрываем экран 1, показываем редактор
       document.getElementById('screen1').style.display = 'none';
       document.getElementById('screen2').style.display = 'flex';
 
-      // Немного подождём, чтобы DOM обновился перед созданием редактора
       setTimeout(() => {
         require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' }});
         require(['vs/editor/editor.main'], function () {
-          monaco.editor.create(document.getElementById('editor'), {
+          editorInstance = monaco.editor.create(document.getElementById('editor'), {
             value: `function hello() {\n  console.log("Привет, LT Code Editor!");\n}`,
             language: 'javascript',
             theme: 'vs-dark',
@@ -137,11 +141,36 @@
             automaticLayout: true,
             autoIndent: "full",
             wordWrap: "on",
-            minimap: { enabled: false },
+            minimap: { enabled: false }
           });
         });
       }, 100);
     }
+
+    function checkCode() {
+      const code = editorInstance.getValue();
+      const resultDiv = document.getElementById('result');
+
+      try {
+        new Function(code);
+        resultDiv.style.color = '#6a9955';
+        resultDiv.textContent = '✅ Ошибок не обнаружено.';
+      } catch (err) {
+        resultDiv.style.color = '#f44747';
+        resultDiv.textContent = `❌ Ошибка: ${err.message}`;
+      }
+    }
+
+    function copyCode() {
+      const code = editorInstance.getValue();
+      navigator.clipboard.writeText(code).then(() => {
+        const resultDiv = document.getElementById('result');
+        resultDiv.style.color = '#9cdcfe';
+        resultDiv.textContent = 'Код скопирован в буфер обмена!';
+      }).catch(() => {
+        alert("Ошибка при копировании.");
+      });
+    }
   </script>
 </body>
-</html>
+  </html>
