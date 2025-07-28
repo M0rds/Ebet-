@@ -45,7 +45,6 @@
       position: relative;
     }
 
-    /* Меню */
     #menu {
       position: fixed;
       top: 0;
@@ -116,7 +115,6 @@
       text-align: center;
     }
 
-    /* Кнопка меню */
     #menu-button {
       position: fixed;
       top: 20px;
@@ -146,7 +144,6 @@
       font-size: 1.2rem;
     }
 
-    /* Экраны */
     #screen1, #screen2 {
       flex: 1;
       display: flex;
@@ -167,7 +164,6 @@
       pointer-events: none;
     }
 
-    /* Заголовок */
     h2 {
       color: white;
       font-size: 2.2rem;
@@ -181,7 +177,6 @@
       background-clip: text;
     }
 
-    /* Текст пользователя */
     #user {
       color: var(--text-light);
       font-size: 1.1rem;
@@ -192,7 +187,6 @@
       opacity: 0.9;
     }
 
-    /* Кнопка Начать */
     .start-button {
       background: var(--primary);
       color: white;
@@ -253,7 +247,6 @@
       }
     }
 
-    /* Редактор */
     #editor-container {
       flex: 1;
       width: 100%;
@@ -302,7 +295,6 @@
       min-height: 20px;
     }
 
-    /* Адаптивность */
     @media (max-width: 768px) {
       h2 {
         font-size: 1.8rem;
@@ -326,12 +318,10 @@
 </head>
 <body>
   <main>
-    <!-- Кнопка меню -->
     <button id="menu-button" onclick="toggleMenu()">
       <i class="fas fa-bars"></i>
     </button>
 
-    <!-- Боковое меню -->
     <div id="menu">
       <div class="menu-header">
         <div class="menu-title">Меню</div>
@@ -353,7 +343,6 @@
       </a>
     </div>
 
-    <!-- Экран приветствия -->
     <div id="screen1">
       <h2>Добро пожаловать в LT Code Editor!</h2>
       <p id="user">Ты попал в LT Code Editor, который поможет тебе писать код и проверять его на ошибки с помощью AI.</p>
@@ -363,7 +352,6 @@
       </button>
     </div>
 
-    <!-- Экран редактора -->
     <div id="screen2">
       <div id="editor-container">
         <div id="editor"></div>
@@ -393,13 +381,11 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // Инициализация переменных
     let editorInstance;
     let pyodide;
     let isPyodideLoaded = false;
     let menuOpen = false;
 
-    // Загрузка Pyodide
     async function loadPyodide() {
       try {
         pyodide = await loadPyodide({
@@ -407,19 +393,15 @@
         });
         await pyodide.loadPackage(['pyflakes']);
         isPyodideLoaded = true;
-        console.log("Pyodide loaded successfully");
       } catch (err) {
         console.error("Failed to load Pyodide:", err);
       }
     }
 
-    // Запускаем загрузку Pyodide при старте
     loadPyodide();
 
-    // Переключение меню
     function toggleMenu() {
       const menu = document.getElementById('menu');
-      const mainContent = document.querySelector('main');
       menuOpen = !menuOpen;
       
       if (menuOpen) {
@@ -435,13 +417,11 @@
       }
     }
 
-    // Показать информацию о создателе
     function showCreatorInfo() {
       toggleMenu();
       alert("LT Code Editor был создан командой энтузиастов для удобной проверки кода.");
     }
 
-    // Запуск редактора
     function startEditor() {
       document.getElementById('screen1').style.display = 'none';
       document.getElementById('screen2').style.display = 'flex';
@@ -463,7 +443,6 @@
       }, 100);
     }
 
-    // Смена языка
     function changeLanguage() {
       const language = document.getElementById('language-selector').value;
       const model = editorInstance.getModel();
@@ -477,7 +456,6 @@
       }
     }
 
-    // Проверка кода
     async function checkCode() {
       const code = editorInstance.getValue();
       const resultDiv = document.getElementById('result');
@@ -521,7 +499,6 @@
       }
     }
 
-    // Копирование кода
     function copyCode() {
       const code = editorInstance.getValue();
       navigator.clipboard.writeText(code).then(() => {
