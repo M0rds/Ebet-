@@ -178,7 +178,7 @@
       background-clip: text;
     }
 
-#user {
+    #user {
       color: var(--text-light);
       font-size: 1.1rem;
       text-align: center;
@@ -357,8 +357,7 @@
 
     <div id="screen1">
       <h2>Добро пожаловать в LT Code Editor!</h2>
-
-<p id="user">Ты попал в LT Code Editor, который поможет тебе писать код и проверять его на ошибки с помощью AI.</p>
+      <p id="user">Ты попал в LT Code Editor, который поможет тебе писать код и проверять его на ошибки с помощью AI.</p>
       <button class="start-button" onclick="startEditor()">
         <i class="fas fa-rocket" style="margin-right: 8px;"></i>
         Начать
@@ -432,7 +431,7 @@
 
     function showCreatorInfo() {
       toggleMenu();
-      alert("@M0rds");
+      alert("@M0rds, wait wait.");
     }
 
     function startEditor() {
@@ -443,7 +442,7 @@
         require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' }});
         require(['vs/editor/editor.main'], function () {
           editorInstance = monaco.editor.create(document.getElementById('editor'), {
-            value: function hello() {\n  console.log("Привет, LT Code Editor!");\n},
+            value: `function hello() {\n  console.log("Привет, LT Code Editor!");\n}`,
             language: 'javascript',
             theme: 'vs-dark',
             fontSize: window.innerWidth < 768 ? 16 : 14,
@@ -462,14 +461,14 @@
 
       if (language === 'javascript') {
         monaco.editor.setModelLanguage(model, 'javascript');
-        editorInstance.setValue(function hello() {\n  console.log("Привет, LT Code Editor!");\n});
+        editorInstance.setValue(`function hello() {\n  console.log("Привет, LT Code Editor!");\n}`);
       } else if (language === 'python') {
         monaco.editor.setModelLanguage(model, 'python');
-        editorInstance.setValue(def hello():\n    print("Привет, LT Code Editor!"));
+        editorInstance.setValue(`def hello():\n    print("Привет, LT Code Editor!")`);
       }
     }
 
-async function checkCode() {
+    async function checkCode() {
       const code = editorInstance.getValue();
       const resultDiv = document.getElementById('result');
       const language = document.getElementById('language-selector').value;
@@ -490,25 +489,25 @@ async function checkCode() {
           }
 
           try {
-            await pyodide.runPythonAsync(
+            await pyodide.runPythonAsync(`
               import ast
               try:
                   ast.parse("""${code.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n')}""")
               except SyntaxError as e:
                   raise Exception(f"Синтаксическая ошибка: {e.msg} (строка {e.lineno})")
-            );
+            `);
 
             await pyodide.runPythonAsync(code);
             resultDiv.style.color = 'var(--success)';
             resultDiv.textContent = '✅ Ошибок не обнаружено.';
           } catch (runtimeErr) {
             resultDiv.style.color = 'var(--error)';
-            resultDiv.textContent = ❌ Ошибка выполнения: ${runtimeErr.message};
+            resultDiv.textContent = `❌ Ошибка выполнения: ${runtimeErr.message}`;
           }
         }
       } catch (err) {
         resultDiv.style.color = 'var(--error)';
-        resultDiv.textContent = ❌ Ошибка ${language === 'javascript' ? 'JavaScript' : 'Python'}: ${err.message};
+        resultDiv.textContent = `❌ Ошибка ${language === 'javascript' ? 'JavaScript' : 'Python'}: ${err.message}`;
       }
     }
 
@@ -524,4 +523,4 @@ async function checkCode() {
     }
   </script>
 </body>
-          </html>
+</html>
