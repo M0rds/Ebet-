@@ -835,6 +835,10 @@
     let aiPanelOpen = false;
     let currentTheme = 'vs-dark';
 
+    const IO_API_KEY = 'io-v2-eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJvd25lciI6ImRiYjI3NmI5LWZmMTctNDU3NS05N2E5LTgzNzk5MzljOGQ5MCIsImV4cCI6NDkwNzE2NDA1N30.XO0E8I4KodeGeqr73o5bAxGf_dy6ONuzb49niCVfm7kq2cSeTk-SFQ1oD6UJjJKXm6Wsx2iILbNmqx4Q0buZMQ';
+const MODEL_NAME = 'Mistral-Large-Instruct-2411';
+const API_URL = 'https://ai.io.net/api/predict';
+
     async function loadPyodide() {
       try {
         pyodide = await loadPyodide({
