@@ -19,6 +19,7 @@
       --error: #f44747;
       --success: #6a9955;
       --menu-width: 240px;
+      --ai-panel-width: 300px;
     }
 
     * {
@@ -451,6 +452,200 @@
       border: 2px solid var(--primary);
     }
 
+    /* AI Assistant Styles */
+    #ai-assistant-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 50;
+      background: var(--primary);
+      border: none;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0, 122, 204, 0.4);
+      transition: all 0.3s;
+    }
+
+    #ai-assistant-button:hover {
+      background: var(--primary-dark);
+      transform: scale(1.05);
+    }
+
+    #ai-assistant-button i {
+      color: white;
+      font-size: 1.2rem;
+    }
+
+    #ai-assistant-panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: var(--ai-panel-width);
+      height: 100%;
+      background: var(--bg-light);
+      box-shadow: -4px 0 15px rgba(0, 0, 0, 0.3);
+      z-index: 90;
+      transform: translateX(100%);
+      transition: transform 0.3s ease-in-out;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #ai-assistant-panel.ai-panel-open {
+      transform: translateX(0);
+    }
+
+    .ai-panel-header {
+      padding: 15px;
+      background: #2d2d2d;
+      border-bottom: 1px solid #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .ai-panel-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-light);
+    }
+
+    .ai-panel-close {
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.3rem;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .ai-panel-close:hover {
+      transform: rotate(90deg);
+    }
+
+    .ai-messages {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .ai-message {
+      padding: 10px;
+      border-radius: 8px;
+      max-width: 90%;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .ai-message.user {
+      background: rgba(0, 122, 204, 0.2);
+      align-self: flex-end;
+      border-bottom-right-radius: 2px;
+    }
+
+    .ai-message.assistant {
+      background: rgba(60, 60, 60, 0.5);
+      align-self: flex-start;
+      border-bottom-left-radius: 2px;
+    }
+
+    .ai-input-container {
+      padding: 15px;
+      border-top: 1px solid #333;
+      display: flex;
+      gap: 10px;
+    }
+
+    .ai-input {
+      flex: 1;
+      padding: 10px;
+      background: #3c3c3c;
+      border: 1px solid #555;
+      border-radius: 6px;
+      color: white;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.9rem;
+      resize: none;
+      min-height: 40px;
+      max-height: 120px;
+    }
+
+    .ai-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .ai-send-button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .ai-send-button:hover {
+      background: var(--primary-dark);
+    }
+
+    .ai-send-button:disabled {
+      background: #555;
+      cursor: not-allowed;
+    }
+
+    .ai-typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 10px;
+      background: rgba(60, 60, 60, 0.5);
+      border-radius: 8px;
+      align-self: flex-start;
+      border-bottom-left-radius: 2px;
+    }
+
+    .ai-typing-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--text-light);
+      border-radius: 50%;
+      animation: typingAnimation 1.4s infinite ease-in-out;
+    }
+
+    .ai-typing-dot:nth-child(1) {
+      animation-delay: 0s;
+    }
+
+    .ai-typing-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .ai-typing-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typingAnimation {
+      0%, 60%, 100% {
+        transform: translateY(0);
+      }
+      30% {
+        transform: translateY(-5px);
+      }
+    }
+
     @media (max-width: 768px) {
       h2 {
         font-size: 1.5rem;
@@ -478,6 +673,10 @@
       #output-panel {
         width: 100%;
         height: 30%;
+      }
+
+      #ai-assistant-panel {
+        width: 85%;
       }
     }
 
@@ -595,6 +794,31 @@
         </div>
       </div>
     </div>
+
+    <!-- AI Assistant Button and Panel -->
+    <button id="ai-assistant-button" onclick="toggleAIPanel()">
+      <i class="fas fa-robot"></i>
+    </button>
+
+    <div id="ai-assistant-panel">
+      <div class="ai-panel-header">
+        <div class="ai-panel-title">AI Помощник</div>
+        <button class="ai-panel-close" onclick="toggleAIPanel()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="ai-messages" id="ai-messages">
+        <div class="ai-message assistant">
+          Привет! Я ваш AI помощник. Я могу помочь вам с написанием кода, объяснить концепции, найти ошибки и предложить улучшения. Чем могу помочь?
+        </div>
+      </div>
+      <div class="ai-input-container">
+        <textarea class="ai-input" id="ai-input" placeholder="Задайте вопрос..." rows="1"></textarea>
+        <button class="ai-send-button" id="ai-send-button" onclick="sendAIMessage()">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
@@ -608,6 +832,7 @@
     let pyodide;
     let isPyodideLoaded = false;
     let menuOpen = false;
+    let aiPanelOpen = false;
     let currentTheme = 'vs-dark';
 
     async function loadPyodide() {
@@ -636,6 +861,23 @@
         }
       } else {
         menu.classList.remove('menu-open');
+        document.getElementById('screen1').classList.remove('blur-content');
+        document.getElementById('screen2').classList.remove('blur-content');
+      }
+    }
+
+    function toggleAIPanel() {
+      const aiPanel = document.getElementById('ai-assistant-panel');
+      aiPanelOpen = !aiPanelOpen;
+
+      if (aiPanelOpen) {
+        aiPanel.classList.add('ai-panel-open');
+        document.getElementById('screen1').classList.add('blur-content');
+        if (document.getElementById('screen2').style.display === 'flex') {
+          document.getElementById('screen2').classList.add('blur-content');
+        }
+      } else {
+        aiPanel.classList.remove('ai-panel-open');
         document.getElementById('screen1').classList.remove('blur-content');
         document.getElementById('screen2').classList.remove('blur-content');
       }
@@ -846,6 +1088,99 @@
         updateOutput('❌ Ошибка при копировании', true);
       });
     }
+
+    // AI Assistant Functions
+    function sendAIMessage() {
+      const input = document.getElementById('ai-input');
+      const message = input.value.trim();
+      
+      if (!message) return;
+      
+      // Add user message
+      addAIMessage(message, 'user');
+      input.value = '';
+      
+      // Show typing indicator
+      showTypingIndicator();
+      
+      // Simulate AI response (in a real app, you would call an API here)
+      setTimeout(() => {
+        removeTypingIndicator();
+        generateAIResponse(message);
+      }, 1500);
+    }
+    
+    function addAIMessage(text, sender) {
+      const messagesContainer = document.getElementById('ai-messages');
+      const messageElement = document.createElement('div');
+      messageElement.classList.add('ai-message', sender);
+      messageElement.textContent = text;
+      messagesContainer.appendChild(messageElement);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+    
+    function showTypingIndicator() {
+      const messagesContainer = document.getElementById('ai-messages');
+      const typingElement = document.createElement('div');
+      typingElement.classList.add('ai-typing-indicator');
+      typingElement.id = 'ai-typing';
+      typingElement.innerHTML = `
+        <div class="ai-typing-dot"></div>
+        <div class="ai-typing-dot"></div>
+        <div class="ai-typing-dot"></div>
+      `;
+      messagesContainer.appendChild(typingElement);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+    
+    function removeTypingIndicator() {
+      const typingElement = document.getElementById('ai-typing');
+      if (typingElement) {
+        typingElement.remove();
+      }
+    }
+    
+    function generateAIResponse(userMessage) {
+      const code = editorInstance.getValue();
+      const language = document.getElementById('language-selector').value;
+      
+      let response = '';
+      
+      // Simple response logic based on user message
+      if (userMessage.toLowerCase().includes('ошибка') || userMessage.toLowerCase().includes('error')) {
+        response = 'Попробуйте использовать функцию "Проверить код" для поиска синтаксических ошибок. Также убедитесь, что все переменные объявлены перед использованием.';
+      } else if (userMessage.toLowerCase().includes('синтаксис') || userMessage.toLowerCase().includes('syntax')) {
+        response = `В ${language} есть определенные правила синтаксиса. Например, в ${language === 'python' ? 'Python важны отступы, а в JavaScript используются фигурные скобки.' : 'JavaScript используются фигурные скобки для блоков кода, а в Python важны отступы.'}`;
+      } else if (userMessage.toLowerCase().includes('функция') || userMessage.toLowerCase().includes('function')) {
+        response = `В ${language} функции определяются с помощью ${
+          language === 'python' ? 'ключевого слова def' : 'ключевого слова function'
+        }. Например:\n\n${
+          language === 'python' ? 'def my_function(param):\n    return param * 2' : 'function myFunction(param) {\n  return param * 2;\n}'
+        }`;
+      } else if (userMessage.toLowerCase().includes('цикл') || userMessage.toLowerCase().includes('loop')) {
+        response = `В ${language} можно использовать различные циклы. Например, цикл for:\n\n${
+          language === 'python' ? 'for i in range(5):\n    print(i)' : 'for (let i = 0; i < 5; i++) {\n  console.log(i);\n}'
+        }`;
+      } else {
+        response = 'Я могу помочь вам с написанием кода, объяснить концепции, найти ошибки и предложить улучшения. Расскажите подробнее, с чем вам нужна помощь.';
+      }
+      
+      addAIMessage(response, 'assistant');
+    }
+
+    // Handle Enter key in AI input
+    document.getElementById('ai-input').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendAIMessage();
+      }
+    });
+
+    // Auto-resize textarea
+    document.getElementById('ai-input').addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = (this.scrollHeight) + 'px';
+    });
 
     document.getElementById('error-color-picker').addEventListener('input', function() {
       const color = this.value;
