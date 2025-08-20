@@ -1089,25 +1089,50 @@
       });
     }
 
-    // AI Assistant Functions
-    function sendAIMessage() {
-      const input = document.getElementById('ai-input');
-      const message = input.value.trim();
-      
-      if (!message) return;
-      
-      // Add user message
-      addAIMessage(message, 'user');
-      input.value = '';
-      
-      // Show typing indicator
-      showTypingIndicator();
-      
-      // Simulate AI response (in a real app, you would call an API here)
-      setTimeout(() => {
-        removeTypingIndicator();
-        generateAIResponse(message);
-      }, 1500);
+    async function sendAIMessage() {
+  const input = document.getElementById('ai-input');
+  const message = input.value.trim();
+  
+  if (!message) return;
+
+  // сообщение пользователя
+  addAIMessage(message, 'user');
+  input.value = '';
+
+  // показываем индикатор "печатает"
+  showTypingIndicator();
+
+  try {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${IO_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: MODEL_NAME,
+        prompt: message,
+        max_tokens: 256
+      })
+    });
+
+    removeTypingIndicator();
+
+    if (!response.ok) {
+      addAIMessage("❌ Ошибка API: " + response.status, 'assistant');
+      return;
+    }
+
+    const data = await response.json();
+    // тут зависит от структуры ответа API
+    const aiReply = data.output || (data.choices && data.choices[0]?.text) || "🤖 Ответ не получен.";
+
+    addAIMessage(aiReply.trim(), 'assistant');
+
+  } catch (err) {
+    removeTypingIndicator();
+    addAIMessage("⚠️ Ошибка запроса: " + err.message, 'assistant');
+  }
     }
     
     function addAIMessage(text, sender) {
